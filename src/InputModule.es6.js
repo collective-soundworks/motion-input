@@ -1,13 +1,18 @@
 class InputModule {
   constructor(eventType) {
     this.eventType = eventType;
-    this.isValid = false;
     this.listeners = [];
     this.event = {};
+    this.promise = null;
+    this.required = {
+      eventType: true
+    };
   }
 
-  init() {
-    // abstract method
+  init(promiseFun) {
+    let promise = new Promise(promiseFun);
+
+    return this.promise;
   }
 
   start() {
@@ -33,9 +38,9 @@ class InputModule {
       this.stop();
   }
 
-  emit() {
+  emit(event = this.event) {
     for(let listener of this.listeners)
-      listener(this.eventType, this.event);
+      listener(this.eventType, event);
   }
 }
 

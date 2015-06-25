@@ -9,56 +9,27 @@ class AccelerationModule extends BaseModule {
     this.event.y = 0;
     this.event.z = 0;
 
-    this.accelerationRaw = null;
-    this.accelerationIncludingGravityRaw = null;
+    this.mustCalculateAcceleration = false;
+    this._accelerationIncludingGravityRawListener = this._accelerationIncludingGravityRawListener.bind(this);
   }
 
   init() {
-    motionInputFactory
-      .requireEither('accelerationRaw', 'accelerationIncludingGravityRaw')
-      .then(module) {
-        this.isValid = true;
-
-        switch(module.eventType) {
-          case 'accelerationRaw':
-            this.accelerationRaw = module;
-            break;
-          case 'accelerationIncludingGravityRaw':
-            this.accelerationIncludingGravityRaw = module;
-            //let period = module.period;
-            break;
+    super.init(function(resolve, reject) {
+      motionInputFactory
+        .require('devicemotion', )
+        .then(module) {
+          if(module.hasAcceleration || module.hasAccelerationIncludingGravity) {
+            this.isValid = true;
+            this.mustCalculateAcceleration = !module.hasAcceleration;
+            resolve(this);
+          } else {
+            reject(new Error("No acceleration in device motion"));
+          }
         }
-      }
-      .catch((error) => {
-        this._tryToGetAccelerationIncludingGravityRaw
-      })
-
-
-    motionInputFactory
-      .require('accelerationRaw')
-      .then(this._useAccelerationRaw)
-      .catch((error) => {
-        this._tryToGetAccelerationIncludingGravityRaw
-      })
-
-// (module) => {
-//         this.isValid = true;
-        
-//         this.accelerationRaw = module;
-//         // resolve promise
-//       }
-//       () => {
-//         motionInputFactory
-//           .require('accelerationIncludingGravityRaw')
-//           .then((module) => {
-//             this.isValid = true;
-
-//             this.accelerationIncludingGravityRaw = module;
-//             //let period = module.period;
-//             // resolve promise
-//           }, (error) => {
-//             // error
-//           });
+        .catch((module) => {
+          reject(this);
+        });
+    });
   }
 
   _accelerationIncludingGravityRawListener(inEvent) {
@@ -73,25 +44,18 @@ class AccelerationModule extends BaseModule {
   }
 
   addListener(listener) {
-    if(this.accelerationRaw) {
-      this.accelerationRaw.addListener(listener);
-    } else if (this.accelerationIncludingGravityRaw) {
+    if(this.mustCalculateAcceleration)
       this.accelerationIncludingGravityRaw.addListener(this._accelerationIncludingGravityRawListener);
-    } else {
-      // throw exception
-    }
+    else
+      this.accelerationRaw.addListener(listener);
   }
 
   removeListener(listener) {
-    if(this.accelerationRaw) {
-      this.accelerationRaw.removeListener(listener);
-    } else if (this.accelerationIncludingGravityRaw) {
+    if(this.mustCalculateAcceleration)
       this.accelerationIncludingGravityRaw.removeListener(this._accelerationIncludingGravityRawListener);
-    } else {
-      // throw exception
-    }
+    else
+      this.accelerationRaw.removeListener(listener);
   }
-
 }
 
 module.exports = AccelerationModule;

@@ -1,8 +1,8 @@
-var moduleClasses = {};
+var classes = {};
 var modules = {};
 
 function register(eventType, moduleClass) {
-  moduleClasses[eventType] = moduleClass;
+  classes[eventType] = moduleClass;
 }
 
 function get(eventType) {
@@ -11,7 +11,7 @@ function get(eventType) {
   if(module)
     return module;
 
-  module = new moduleClasses[className]();
+  module = new classes[className]();
   modules[eventType] = module;
 
   return module;
@@ -19,7 +19,9 @@ function get(eventType) {
 
 function require(eventType) {
   let module = get(eventType);
-  return module.init();
+
+  if(!module.promise)
+    module.init();
 }
 
 module.exports = {
