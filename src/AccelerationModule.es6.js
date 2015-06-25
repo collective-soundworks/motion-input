@@ -15,25 +15,50 @@ class AccelerationModule extends BaseModule {
 
   init() {
     motionInputFactory
-      .require('accelerationRaw')
-      .then((module) => {
+      .requireEither('accelerationRaw', 'accelerationIncludingGravityRaw')
+      .then(module) {
         this.isValid = true;
-        
-        this.accelerationRaw = module;
-        // resolve promise
-      }, (error) => {
-        motionInputFactory
-          .require('accelerationIncludingGravityRaw')
-          .then((module) => {
-            this.isValid = true;
 
+        switch(module.eventType) {
+          case 'accelerationRaw':
+            this.accelerationRaw = module;
+            break;
+          case 'accelerationIncludingGravityRaw':
             this.accelerationIncludingGravityRaw = module;
             //let period = module.period;
-            // resolve promise
-          }, (error) => {
-            // error
-          });
-      });
+            break;
+        }
+      }
+      .catch((error) => {
+        this._tryToGetAccelerationIncludingGravityRaw
+      })
+
+
+    motionInputFactory
+      .require('accelerationRaw')
+      .then(this._useAccelerationRaw)
+      .catch((error) => {
+        this._tryToGetAccelerationIncludingGravityRaw
+      })
+
+// (module) => {
+//         this.isValid = true;
+        
+//         this.accelerationRaw = module;
+//         // resolve promise
+//       }
+//       () => {
+//         motionInputFactory
+//           .require('accelerationIncludingGravityRaw')
+//           .then((module) => {
+//             this.isValid = true;
+
+//             this.accelerationIncludingGravityRaw = module;
+//             //let period = module.period;
+//             // resolve promise
+//           }, (error) => {
+//             // error
+//           });
   }
 
   _accelerationIncludingGravityRawListener(inEvent) {
