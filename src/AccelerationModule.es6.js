@@ -1,5 +1,5 @@
 const BaseModule = require('./BaseModule');
-const motionInputFactory = require('./motionInputFactory');
+const moduleFactory = require('./moduleFactory');
 
 class AccelerationModule extends BaseModule {
   constructor() {
@@ -15,9 +15,9 @@ class AccelerationModule extends BaseModule {
 
   init() {
     super.init(function(resolve, reject) {
-      motionInputFactory
-        .require('devicemotion', )
-        .then(module) {
+      moduleFactory
+        .require('devicemotion')
+        .then((module) => {
           if(module.hasAcceleration || module.hasAccelerationIncludingGravity) {
             this.isValid = true;
             this.mustCalculateAcceleration = !module.hasAcceleration;
@@ -25,7 +25,7 @@ class AccelerationModule extends BaseModule {
           } else {
             reject(new Error("No acceleration in device motion"));
           }
-        }
+        })
         .catch((module) => {
           reject(this);
         });

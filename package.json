@@ -1,0 +1,19 @@
+{
+  "name": "motion-input",
+  "version": "0.0.1",
+  "description": "Motion input module.",
+  "authors": [
+    "Sebastien.Robaszkiewicz@ircam.fr",
+    "Norbert.Schnell@ircam.fr"
+  ],
+  "dependencies": {},
+  "devDependencies": {
+    "browserify": "^10.2.4",
+    "gulp": "^3.9.0",
+    "gulp-babel": "^5.1.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-watch": "^4.2.4",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0"
+  }
+}

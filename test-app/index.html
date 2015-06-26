@@ -1,0 +1,183 @@
+<!doctype html5>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Input test</title>
+  <link rel="stylesheet" type="text/css" href="bootstrap.css">
+</head>
+
+<body>
+  <div class="container">
+    <h3>Sensor support overview</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-3">orientation</th>
+          <th class="col-xs-3">acceleration including gravity</th>
+          <th class="col-xs-3">acceleration</th>
+          <th class="col-xs-3">rotationRate</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="orientationSupport"></td>
+          <td id="accelerationIncludingGravitySupport"></td>
+          <td id="accelerationSupport"></td>
+          <td id="rotationRateSupport"></td>
+        </tr>
+      </tbody>
+    </table>
+
+
+    <h3>Orientation</h3>
+
+    <h4>Euler angles (Tait-Bryan angles Z-X'-Y'')</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>alpha</th>
+          <th>beta</th>
+          <th>gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="orientationAlphaRaw" class="col-xs-3">-</td>
+          <td id="orientationBetaRaw" class="col-xs-3">-</td>
+          <td id="orientationGammaRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="orientationAlphaUnified">-</td>
+          <td id="orientationBetaUnified">-</td>
+          <td id="orientationGammaUnified">-</td>
+        </tr>
+        <tr>
+          <th>screen</th>
+          <td id="orientationAlphaScreen">-</td>
+          <td id="orientationBetaScreen">-</td>
+          <td id="orientationGammaScreen">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h4>Other information about the deviceOrientation event</h4>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-2">absolute</th>
+          <th class="col-xs-5">webkitCompassHeading</th>
+          <th class="col-xs-5">webkitCompassAccuracy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="orientationAbsolute"></td>
+          <td id="orientationWebkitCompassHeading"></td>
+          <td id="orientationWebkitCompassAccuracy"></td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>Acceleration Including Gravity</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>x</th>
+          <th>y</th>
+          <th>z</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="accelerationIncludingGravityXRaw" class="col-xs-3">-</td>
+          <td id="accelerationIncludingGravityYRaw" class="col-xs-3">-</td>
+          <td id="accelerationIncludingGravityZRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="accelerationIncludingGravityXUnified">-</td>
+          <td id="accelerationIncludingGravityYUnified">-</td>
+          <td id="accelerationIncludingGravityZUnified">-</td>
+        </tr>
+        <tr>
+          <th>screen</th>
+          <td id="accelerationIncludingGravityXScreen">-</td>
+          <td id="accelerationIncludingGravityYScreen">-</td>
+          <td id="accelerationIncludingGravityZScreen">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Acceleration</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>x</th>
+          <th>y</th>
+          <th>z</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="accelerationXRaw" class="col-xs-3">-</td>
+          <td id="accelerationYRaw" class="col-xs-3">-</td>
+          <td id="accelerationZRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="accelerationXUnified">-</td>
+          <td id="accelerationYUnified">-</td>
+          <td id="accelerationZUnified">-</td>
+        </tr>
+        <tr>
+          <th>screen</th>
+          <td id="accelerationXScreen">-</td>
+          <td id="accelerationYScreen">-</td>
+          <td id="accelerationZScreen">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Rotation Rate</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>alpha</th>
+          <th>beta</th>
+          <th>gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="rotationRateAlphaRaw" class="col-xs-3">-</td>
+          <td id="rotationRateBetaRaw" class="col-xs-3">-</td>
+          <td id="rotationRateGammaRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="rotationRateAlphaUnified">-</td>
+          <td id="rotationRateBetaUnified">-</td>
+          <td id="rotationRateGammaUnified">-</td>
+        </tr>
+        <tr>
+          <th>screen</th>
+          <td id="rotationRateAlphaScreen">-</td>
+          <td id="rotationRateBetaScreen">-</td>
+          <td id="rotationRateGammaScreen">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+  <script type="text/javascript" src="bundle.js"></script>
+</body>
+</html>

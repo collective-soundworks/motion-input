@@ -1,5 +1,5 @@
 const InputModule = require('./InputModule');
-const motionInputFactory = require('./motionInputFactory');
+// const motionInput = require('./motionInput');
 
 class DevicemotionSubModule extends InputModule {
   constructor(devicemotionModule, eventType) {
@@ -21,17 +21,20 @@ class DevicemotionSubModule extends InputModule {
 
   init() {
     this.devicemotionModule.required[this.eventType] = true;
-    
-    return super.init(function(resolve, reject) {
-      this.devicemotionModule.promise
-        .then((module) => resolve(this))
-        .catch((module) => reject(this));
-    });
+
+    let devicemotionPromise = this.devicemotionModule.promise;
+
+    if(!devicemotionPromise)
+      devicemotionPromise = this.devicemotionModule.init();
+
+    return devicemotionPromise.then((module) => this);
   }
 }
 
 class DevicemotionModule extends InputModule {
   constructor() {
+    super('devicemotion');
+
     this.accelerationIncludingGravity = new DevicemotionSubModule(this, 'accelerationIncludingGravity');
     this.acceleration = new DevicemotionSubModule(this, 'acceleration');
     this.rotationRate = new DevicemotionSubModule(this, 'rotationRate');
@@ -42,13 +45,7 @@ class DevicemotionModule extends InputModule {
       acceleraton: false,
       accelerationIncludingGravity: false,
       rotationRate: false
-    }
-
-    this.provided = {
-      acceleraton: false,
-      accelerationIncludingGravity: false,
-      rotationRate: false
-    }
+    };
 
     this.accelerationIncludingGravityEvent = [0, 0, 0];
     this.accelerationEvent = [0, 0, 0];
@@ -56,10 +53,12 @@ class DevicemotionModule extends InputModule {
 
     this._devicemotionCheck = this._devicemotionCheck.bind(this);
     this._devicemotionListener = this._devicemotionListener.bind(this);
+
+    this.promiseResolve  = null;
   }
 
   _devicemotionListener(e) {
-    if(this.required.accelerationIncludingGravity && this.provided.accelerationIncludingGravity) {
+    if(this.required.accelerationIncludingGravity && this.accelerationIncludingGravity.isValid) {
       let outEvent = this.accelerationIncludingGravityEvent;
 
       outEvent[0] = e.accelerationIncludingGravity.x;
@@ -72,11 +71,11 @@ class DevicemotionModule extends InputModule {
     if(this.required.acceleration) {
       let outEvent = this.accelerationEvent;
 
-      if(this.provided.acceleration) {
+      if(this.acceleration.isValid) {
         outEvent[0] = e.acceleration.x;
         outEvent[1] = e.acceleration.y;
         outEvent[2] = e.acceleration.z;
-      } else if (this.provided.accelerationIncludingGravity) {
+      } else if (this.accelerationIncludingGravity.isValid) {
         // TODO: calculate from accelerationIncludingGravity
         outEvent[0] = 77;
         outEvent[1] = 77;
@@ -86,7 +85,7 @@ class DevicemotionModule extends InputModule {
       this.emit(outEvent);
     } 
 
-    if(this.required.rotationRate && this.provided.rotationRate) {
+    if(this.required.rotationRate && this.rotationRate.isValid) {
       let outEvent = this.rotationRateEvent;
 
       outEvent[0] = e.rotationRate.alpha;
@@ -98,23 +97,40 @@ class DevicemotionModule extends InputModule {
   }
 
   _devicemotionCheck(e) {
-    this.provided.accelerationIncludingGravity = (e.accelerationIncludingGravity && e.accelerationIncludingGravity.x && e.accelerationIncludingGravity.y && e.accelerationIncludingGravity.z);
-    this.provided.acceleration = (e.acceleration && e.acceleration.x && e.acceleration.y && e.acceleration.z);
-    this.provided.rotationRate = (e.rotationRate && e.rotationRate.alpha && e.rotationRate.beta && e.rotationRate.gamma);
+    this.accelerationIncludingGravity.isValid = (
+      e.accelerationIncludingGravity && 
+      (typeof e.accelerationIncludingGravity.x === 'number') && 
+      (typeof e.accelerationIncludingGravity.y === 'number') && 
+      (typeof e.accelerationIncludingGravity.z === 'number'));
+
+    this.acceleration.isValid = (
+      e.acceleration && 
+      (typeof e.acceleration.x === 'number') && 
+      (typeof e.acceleration.y === 'number') && 
+      (typeof e.acceleration.z === 'number'));
+
+    this.rotationRate.isValid = (
+      e.rotationRate && 
+      (typeof e.rotationRate.alpha === 'number') && 
+      (typeof e.rotationRate.beta === 'number') && 
+      (typeof e.rotationRate.gamma === 'number'));
 
     // TODO: get period
 
     window.removeEventListener('devicemotion', this._devicemotionCheck);
 
-    resolve(this);
+    this.isValid = (this.accelerationIncludingGravity.isValid || this.acceleration.isValid || this.rotationRate.isValid);
+    this.promiseResolve(this);
   }
 
   init() {
-    super.init((resolve, reject) => {
+    return super.init((resolve, reject) => {
+      this.promiseResolve = resolve;
+
       if (window.DeviceMotionEvent) {
         window.addEventListener('devicemotion', this._devicemotionCheck, false);
       } else {
-        reject(this);
+        resolve(this);
       }
     });
   }

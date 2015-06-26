@@ -4,14 +4,11 @@ class InputModule {
     this.listeners = [];
     this.event = {};
     this.promise = null;
-    this.required = {
-      eventType: true
-    };
+    this.isValid = false;
   }
 
   init(promiseFun) {
-    let promise = new Promise(promiseFun);
-
+    this.promise = new Promise(promiseFun);
     return this.promise;
   }
 
