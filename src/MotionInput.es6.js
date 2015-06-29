@@ -46,7 +46,7 @@ class MotionInput {
 
 /*********************************************************
  *
- * const input = require("motion-input");
+ * const input = require('motion-input');
  *
  * input
  *  .init(requiredEvents)

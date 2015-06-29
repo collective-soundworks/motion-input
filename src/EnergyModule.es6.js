@@ -1,7 +1,6 @@
-const BaseModule = require('./BaseModule');
-// const MotionInput = require('./MotionInput');
+const InputModule = require('./InputModule');
 
-class EnergyModule extends BaseModule {
+class EnergyModule extends InputModule {
   constructor() {
     super();
   }

@@ -1,6 +1,9 @@
-const motionInput = require("./MotionInput");
+const motionInput = require('./MotionInput');
+const deviceorientationModule = require('./DeviceorientationModule');
+const devicemotionModule = require('./DevicemotionModule');
 
-const devicemotionModule = require("./DevicemotionModule");
+motionInput.addModule('devicemotion', devicemotionModule);
+motionInput.addModule('orientation', deviceorientationModule);
 motionInput.addModule('accelerationIncludingGravity', devicemotionModule.accelerationIncludingGravity);
 motionInput.addModule('acceleration', devicemotionModule.acceleration);
 motionInput.addModule('rotationRate', devicemotionModule.rotationRate);
