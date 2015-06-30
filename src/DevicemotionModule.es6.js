@@ -1,44 +1,24 @@
 const InputModule = require('./InputModule');
-
-class DevicemotionSubmodule extends InputModule {
-  constructor(devicemotionModule, eventType) {
-    super(eventType);
-
-    this.devicemotionModule = devicemotionModule;
-    this.event[0] = 0;
-    this.event[1] = 0;
-    this.event[2] = 0;
-  }
-
-  start() {
-    this.devicemotionModule._addListener();
-  }
-
-  stop() {
-    this.devicemotionModule._removeListener();
-  }
-
-  init() {
-    this.devicemotionModule.required[this.eventType] = true;
-
-    let devicemotionPromise = this.devicemotionModule.promise;
-
-    if (!devicemotionPromise)
-      devicemotionPromise = this.devicemotionModule.init();
-
-    return devicemotionPromise.then((module) => this);
-  }
-}
+const DOMEventSubmodule = require('./DOMEventSubmodule');
+const platform = require('platform');
 
 class DevicemotionModule extends InputModule {
   constructor() {
     super('devicemotion');
 
-    this.event = [undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined];
+    this.event[0] = undefined;
+    this.event[1] = undefined;
+    this.event[2] = undefined;
+    this.event[3] = undefined;
+    this.event[4] = undefined;
+    this.event[5] = undefined;
+    this.event[6] = undefined;
+    this.event[7] = undefined;
+    this.event[8] = undefined;
 
-    this.accelerationIncludingGravity = new DevicemotionSubmodule(this, 'accelerationIncludingGravity');
-    this.acceleration = new DevicemotionSubmodule(this, 'acceleration');
-    this.rotationRate = new DevicemotionSubmodule(this, 'rotationRate');
+    this.accelerationIncludingGravity = new DOMEventSubmodule(this, 'accelerationIncludingGravity');
+    this.acceleration = new DOMEventSubmodule(this, 'acceleration');
+    this.rotationRate = new DOMEventSubmodule(this, 'rotationRate');
 
     this.required = {
       acceleration: false,
@@ -46,18 +26,20 @@ class DevicemotionModule extends InputModule {
       rotationRate: false
     };
 
-    this.accelerationIncludingGravityEvent = [0, 0, 0];
-    this.accelerationEvent = [0, 0, 0];
-    this.rotationRateEvent = [0, 0, 0];
-
     this._devicemotionCheck = this._devicemotionCheck.bind(this);
     this._devicemotionListener = this._devicemotionListener.bind(this);
 
-    this._promiseResolve = null;
     this._numListeners = 0;
+    this._promiseResolve = null;
+    this._unify = (platform.os.family === 'iOS' ? -1 : 1);
+
+    this._estimatedGravity = [0, 0, 0];
   }
 
   _devicemotionCheck(e) {
+    this.isProvided = true;
+
+    // Check sensors for accelerationIncludingGravity, acceleration, and rotationRate
     this.accelerationIncludingGravity.isProvided = (
       e.accelerationIncludingGravity &&
       (typeof e.accelerationIncludingGravity.x === 'number') &&
@@ -79,10 +61,14 @@ class DevicemotionModule extends InputModule {
       (typeof e.rotationRate.gamma === 'number')
     );
 
+    // If acceleration is not provided by raw sensors,
+    // indicate whether it can be calculated with accelerationIncludingGravity
+    if (!this.acceleration.isProvided)
+      this.acceleration.isCalculated = this.accelerationIncludingGravity.isProvided;
+
     // TODO: get period
 
     window.removeEventListener('devicemotion', this._devicemotionCheck);
-
     this._promiseResolve(this);
   }
 
@@ -92,7 +78,7 @@ class DevicemotionModule extends InputModule {
     if (this.required.accelerationIncludingGravity && this.accelerationIncludingGravity.isValid)
       this._emitAccelerationIncludingGravityEvent(e);
 
-    if (this.required.acceleration)
+    if (this.required.acceleration && this.acceleration.isValid)
       this._emitAccelerationEvent(e);
 
     if (this.required.rotationRate && this.rotationRate.isValid)
@@ -124,38 +110,51 @@ class DevicemotionModule extends InputModule {
   }
 
   _emitAccelerationIncludingGravityEvent(e) {
-    let outEvent = this.accelerationIncludingGravityEvent;
+    let outEvent = this.accelerationIncludingGravity.event;
 
-    outEvent[0] = e.accelerationIncludingGravity.x;
-    outEvent[1] = e.accelerationIncludingGravity.y;
-    outEvent[2] = e.accelerationIncludingGravity.z;
-
-    // TODO: unify
+    outEvent[0] = e.accelerationIncludingGravity.x * this._unify;
+    outEvent[1] = e.accelerationIncludingGravity.y * this._unify;
+    outEvent[2] = e.accelerationIncludingGravity.z * this._unify;
 
     this.accelerationIncludingGravity.emit(outEvent);
   }
 
   _emitAccelerationEvent(e) {
-    let outEvent = this.accelerationEvent;
+    let outEvent = this.acceleration.event;
 
-    if (this.acceleration.isValid) {
-      outEvent[0] = e.acceleration.x;
-      outEvent[1] = e.acceleration.y;
-      outEvent[2] = e.acceleration.z;
+    if (this.acceleration.isProvided) {
+      // If raw acceleration values are provided
+      outEvent[0] = e.acceleration.x * this._unify;
+      outEvent[1] = e.acceleration.y * this._unify;
+      outEvent[2] = e.acceleration.z * this._unify;
     } else if (this.accelerationIncludingGravity.isValid) {
-      // TODO: calculate from accelerationIncludingGravity
-      outEvent[0] = 77;
-      outEvent[1] = 77;
-      outEvent[2] = 77;
-    }
+      // Otherwise, if accelerationIncludingGravity values are provided,
+      // estimate the acceleration with a low pass filter
+      const accelerationIncludingGravity = [
+        e.accelerationIncludingGravity.x * this._unify,
+        e.accelerationIncludingGravity.y * this._unify,
+        e.accelerationIncludingGravity.z * this._unify
+      ];
+      const k = 0.8;
 
-    // TODO: unify
+      // Low pass filter to estimate the gravity
+      this._estimatedGravity[0] = k * this._estimatedGravity[0] + (1 - k) * accelerationIncludingGravity[0];
+      this._estimatedGravity[1] = k * this._estimatedGravity[1] + (1 - k) * accelerationIncludingGravity[1];
+      this._estimatedGravity[2] = k * this._estimatedGravity[2] + (1 - k) * accelerationIncludingGravity[2];
+
+      // Substract estimated gravity from the accelerationIncludingGravity values
+      outEvent[0] = accelerationIncludingGravity[0] - this._estimatedGravity[0];
+      outEvent[1] = accelerationIncludingGravity[1] - this._estimatedGravity[1];
+      outEvent[2] = accelerationIncludingGravity[2] - this._estimatedGravity[2];
+    } else {
+      // TODO: throw error?
+    }
 
     this.acceleration.emit(outEvent);
   }
 
   _emitRotationRateEvent(e) {
-    let outEvent = this.rotationRateEvent;
+    let outEvent = this.rotationRate.event;
 
     outEvent[0] = e.rotationRate.alpha;
     outEvent[1] = e.rotationRate.beta;
@@ -164,29 +163,6 @@ class DevicemotionModule extends InputModule {
     // TODO: unify
 
     this.rotationRate.emit(outEvent);
-  }
-
-  init() {
-    return super.init((resolve, reject) => {
-      this._promiseResolve = resolve;
-
-      if (window.DeviceMotionEvent) {
-        this.isProvided = true;
-        window.addEventListener('devicemotion', this._devicemotionCheck, false);
-      } else {
-        resolve(this);
-      }
-    });
-  }
-
-  addListener(listener) {
-    super.addListener(listener);
-    this._addListener();
-  }
-
-  removeListener(listener) {
-    super.removeListener(listener);
-    this._removeListener();
   }
 
   _addListener() {
@@ -201,6 +177,27 @@ class DevicemotionModule extends InputModule {
 
     if (this._numListeners === 0)
       window.removeEventListener('devicemotion', this._devicemotionListener, false);
+  }
+
+  init() {
+    return super.init((resolve, reject) => {
+      this._promiseResolve = resolve;
+
+      if (window.DeviceMotionEvent)
+        window.addEventListener('devicemotion', this._devicemotionCheck, false);
+      else
+        resolve(this);
+    });
+  }
+
+  addListener(listener) {
+    super.addListener(listener);
+    this._addListener();
+  }
+
+  removeListener(listener) {
+    super.removeListener(listener);
+    this._removeListener();
   }
 }
 

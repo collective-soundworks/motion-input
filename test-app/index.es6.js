@@ -75,26 +75,47 @@ function roundValue(input) {
 }
 
 function displayProvidedSensors(modules) {
-  const [orientation, accelerationIncludingGravity, acceleration, rotationRate] = modules;
-  if (orientation.isValid) {
+  const [
+    deviceorientation,
+    devicemotion,
+    orientation,
+    accelerationIncludingGravity,
+    acceleration,
+    rotationRate
+  ] = modules;
+
+  if (orientation.isProvided) {
     orientationProvided.textContent = 'Yes';
     orientationProvided.classList.add('success');
     orientationProvided.classList.remove('danger');
   }
-  if (accelerationIncludingGravity.isValid) {
+
+  if (accelerationIncludingGravity.isProvided) {
     accelerationIncludingGravityProvided.textContent = 'Yes';
     accelerationIncludingGravityProvided.classList.add('success');
     accelerationIncludingGravityProvided.classList.remove('danger');
   }
-  if (acceleration.isValid) {
+  
+  if (acceleration.isProvided) {
     accelerationProvided.textContent = 'Yes';
     accelerationProvided.classList.add('success');
     accelerationProvided.classList.remove('danger');
   }
-  if (rotationRate.isValid) {
+  
+  if (rotationRate.isProvided) {
     rotationRateProvided.textContent = 'Yes';
     rotationRateProvided.classList.add('success');
     rotationRateProvided.classList.remove('danger');
+  }
+}
+
+function displayDeviceorientationRaw(module) {
+  if (module.isValid) {
+    input.addListener('deviceorientation', (deviceorientation) => {
+      orientationAlphaRaw.textContent = roundValue(deviceorientation[0]);
+      orientationBetaRaw.textContent = roundValue(deviceorientation[1]);
+      orientationGammaRaw.textContent = roundValue(deviceorientation[2]);
+    });
   }
 }
 
@@ -157,11 +178,19 @@ function displayRotationRate(module) {
 }
 
 (function() {
-  input.init('orientation', 'devicemotion', 'accelerationIncludingGravity', 'acceleration', 'rotationRate')
+  input.init('deviceorientation', 'devicemotion', 'orientation', 'accelerationIncludingGravity', 'acceleration', 'rotationRate')
     .then((modules) => {
-      const [orientation, devicemotion, accelerationIncludingGravity, acceleration, rotationRate] = modules;
+      const [
+        deviceorientation,
+        devicemotion,
+        orientation,
+        accelerationIncludingGravity,
+        acceleration,
+        rotationRate
+      ] = modules;
 
       displayProvidedSensors(modules);
+      displayDeviceorientationRaw(deviceorientation);
       displayDevicemotionRaw(devicemotion);
       displayOrientation(orientation)
       displayAccelerationIncludingGravity(accelerationIncludingGravity);
@@ -171,12 +200,6 @@ function displayRotationRate(module) {
 
   // input.orientationModule.on('orientation:values', () => {
   //   if (orientationSupported) {
-  //     orientationAlphaRaw.textContent = roundValue(input.orientationModule.lastRawEvent.alpha);
-  //     orientationBetaRaw.textContent = roundValue(input.orientationModule.lastRawEvent.beta);
-  //     orientationGammaRaw.textContent = roundValue(input.orientationModule.lastRawEvent.gamma);
-  //     orientationAlphaUnified.textContent = roundValue(input.orientationModule.alpha);
-  //     orientationBetaUnified.textContent = roundValue(input.orientationModule.beta);
-  //     orientationGammaUnified.textContent = roundValue(input.orientationModule.gamma);
   //     orientationAbsolute.textContent = input.orientationModule.lastRawEvent.absolute + "";
   //     orientationWebkitCompassHeading.textContent = roundValue(input.orientationModule.lastRawEvent.webkitCompassHeading);
   //     orientationWebkitCompassAccuracy.textContent = roundValue(input.orientationModule.lastRawEvent.webkitCompassAccuracy);
@@ -190,20 +213,6 @@ function displayRotationRate(module) {
   // });
 
   // input.motionModule.on('motion:values', () => {
-
-  //   if (accelerationSupported) {
-  //     accelerationXRaw.textContent = roundValue(input.motionModule.lastRawEvent.acceleration.x);
-  //     accelerationYRaw.textContent = roundValue(input.motionModule.lastRawEvent.acceleration.y);
-  //     accelerationZRaw.textContent = roundValue(input.motionModule.lastRawEvent.acceleration.z);
-  //     accelerationXUnified.textContent = roundValue(input.acceleration.x);
-  //     accelerationYUnified.textContent = roundValue(input.acceleration.y);
-  //     accelerationZUnified.textContent = roundValue(input.acceleration.z);
-  //   } else {
-  //     accelerationXUnified.textContent = roundValue(input.acceleration.x);
-  //     accelerationYUnified.textContent = roundValue(input.acceleration.y);
-  //     accelerationZUnified.textContent = roundValue(input.acceleration.z);
-  //   }
-
   //   if (!orientationSupported) {
   //     orientationBetaUnified.textContent = roundValue(input.orientation.beta);
   //     orientationGammaUnified.textContent = roundValue(input.orientation.gamma);
