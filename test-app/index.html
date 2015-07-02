@@ -2,20 +2,22 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Input test</title>
+  <title>Motion Input Test</title>
   <link rel="stylesheet" type="text/css" href="bootstrap.css">
 </head>
 
 <body>
   <div class="container">
+    <h1>Motion Input Test</h1>
+
     <h3>Raw values provided</h3>
     <table class="table">
       <thead>
         <tr>
-          <th class="col-xs-3">orientation</th>
-          <th class="col-xs-3">acceleration including gravity</th>
-          <th class="col-xs-3">acceleration</th>
-          <th class="col-xs-3">rotationRate</th>
+          <th class="col-xs-3">Orientation</th>
+          <th class="col-xs-3">Acceleration Including Gravity</th>
+          <th class="col-xs-3">Acceleration</th>
+          <th class="col-xs-3">Rotation Rate</th>
         </tr>
       </thead>
       <tbody>
@@ -29,9 +31,7 @@
     </table>
 
 
-    <h3>Orientation</h3>
-
-    <h4>Euler angles (Tait-Bryan angles Z-X'-Y'')</h4>
+    <h3>Orientation (Tait-Bryan angles Z-X'-Y'')</h3>
     <table class="table">
       <thead>
         <tr>
@@ -53,30 +53,6 @@
           <td id="orientationAlphaUnified">-</td>
           <td id="orientationBetaUnified">-</td>
           <td id="orientationGammaUnified">-</td>
-        </tr>
-        <tr>
-          <th>screen</th>
-          <td id="orientationAlphaScreen">-</td>
-          <td id="orientationBetaScreen">-</td>
-          <td id="orientationGammaScreen">-</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <h4>Other information about the deviceOrientation event</h4>
-    <table class="table">
-      <thead>
-        <tr>
-          <th class="col-xs-2">absolute</th>
-          <th class="col-xs-5">webkitCompassHeading</th>
-          <th class="col-xs-5">webkitCompassAccuracy</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td id="orientationAbsolute"></td>
-          <td id="orientationWebkitCompassHeading"></td>
-          <td id="orientationWebkitCompassAccuracy"></td>
         </tr>
       </tbody>
     </table>
@@ -104,12 +80,6 @@
           <td id="accelerationIncludingGravityYUnified">-</td>
           <td id="accelerationIncludingGravityZUnified">-</td>
         </tr>
-        <tr>
-          <th>screen</th>
-          <td id="accelerationIncludingGravityXScreen">-</td>
-          <td id="accelerationIncludingGravityYScreen">-</td>
-          <td id="accelerationIncludingGravityZScreen">-</td>
-        </tr>
       </tbody>
     </table>
 
@@ -136,12 +106,6 @@
           <td id="accelerationYUnified">-</td>
           <td id="accelerationZUnified">-</td>
         </tr>
-        <tr>
-          <th>screen</th>
-          <td id="accelerationXScreen">-</td>
-          <td id="accelerationYScreen">-</td>
-          <td id="accelerationZScreen">-</td>
-        </tr>
       </tbody>
     </table>
 
@@ -167,12 +131,6 @@
           <td id="rotationRateAlphaUnified">-</td>
           <td id="rotationRateBetaUnified">-</td>
           <td id="rotationRateGammaUnified">-</td>
-        </tr>
-        <tr>
-          <th>screen</th>
-          <td id="rotationRateAlphaScreen">-</td>
-          <td id="rotationRateBetaScreen">-</td>
-          <td id="rotationRateGammaScreen">-</td>
         </tr>
       </tbody>
     </table>

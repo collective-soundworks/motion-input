@@ -26,7 +26,7 @@ gulp.task('transpile-app', ['transpile-lib'], function() {
 });
 
 gulp.task('transpile-lib', function() {
-  gulp.src('src/*.es6.js')
+  return gulp.src('src/*.es6.js')
     .pipe(babel())
     .pipe(rename(function(path) {
       path.basename = path.basename.replace('.es6', '');

@@ -18,14 +18,6 @@ var orientationAlphaUnified = document.getElementById('orientationAlphaUnified')
 var orientationBetaUnified = document.getElementById('orientationBetaUnified');
 var orientationGammaUnified = document.getElementById('orientationGammaUnified');
 
-var orientationAlphaScreen = document.getElementById('orientationAlphaScreen');
-var orientationBetaScreen = document.getElementById('orientationBetaScreen');
-var orientationGammaScreen = document.getElementById('orientationGammaScreen');
-
-var orientationAbsolute = document.getElementById('orientationAbsolute');
-var orientationWebkitCompassHeading = document.getElementById('orientationWebkitCompassHeading');
-var orientationWebkitCompassAccuracy = document.getElementById('orientationWebkitCompassAccuracy');
-
 // Acceleration including gravity DOM elements
 var accelerationIncludingGravityXRaw = document.getElementById('accelerationIncludingGravityXRaw');
 var accelerationIncludingGravityYRaw = document.getElementById('accelerationIncludingGravityYRaw');
@@ -34,10 +26,6 @@ var accelerationIncludingGravityZRaw = document.getElementById('accelerationIncl
 var accelerationIncludingGravityXUnified = document.getElementById('accelerationIncludingGravityXUnified');
 var accelerationIncludingGravityYUnified = document.getElementById('accelerationIncludingGravityYUnified');
 var accelerationIncludingGravityZUnified = document.getElementById('accelerationIncludingGravityZUnified');
-
-var accelerationIncludingGravityXScreen = document.getElementById('accelerationIncludingGravityXScreen');
-var accelerationIncludingGravityYScreen = document.getElementById('accelerationIncludingGravityYScreen');
-var accelerationIncludingGravityZScreen = document.getElementById('accelerationIncludingGravityZScreen');
 
 // Acceleration DOM elements
 var accelerationXRaw = document.getElementById('accelerationXRaw');
@@ -48,10 +36,6 @@ var accelerationXUnified = document.getElementById('accelerationXUnified');
 var accelerationYUnified = document.getElementById('accelerationYUnified');
 var accelerationZUnified = document.getElementById('accelerationZUnified');
 
-var accelerationXScreen = document.getElementById('accelerationXScreen');
-var accelerationYScreen = document.getElementById('accelerationYScreen');
-var accelerationZScreen = document.getElementById('accelerationZScreen');
-
 // Rotation rate DOM elements
 var rotationRateAlphaRaw = document.getElementById('rotationRateAlphaRaw');
 var rotationRateBetaRaw = document.getElementById('rotationRateBetaRaw');
@@ -60,10 +44,6 @@ var rotationRateGammaRaw = document.getElementById('rotationRateGammaRaw');
 var rotationRateAlphaUnified = document.getElementById('rotationRateAlphaUnified');
 var rotationRateBetaUnified = document.getElementById('rotationRateBetaUnified');
 var rotationRateGammaUnified = document.getElementById('rotationRateGammaUnified');
-
-var rotationRateAlphaScreen = document.getElementById('rotationRateAlphaScreen');
-var rotationRateBetaScreen = document.getElementById('rotationRateBetaScreen');
-var rotationRateGammaScreen = document.getElementById('rotationRateGammaScreen');
 
 function roundValue(input) {
   if (input === undefined)
@@ -76,12 +56,12 @@ function roundValue(input) {
 
 function displayProvidedSensors(modules) {
   const [
-    deviceorientation,
     devicemotion,
-    orientation,
     accelerationIncludingGravity,
     acceleration,
-    rotationRate
+    rotationRate,
+    deviceorientation,
+    orientation
   ] = modules;
 
   if (orientation.isProvided) {
@@ -178,54 +158,23 @@ function displayRotationRate(module) {
 }
 
 (function() {
-  input.init('deviceorientation', 'devicemotion', 'orientation', 'accelerationIncludingGravity', 'acceleration', 'rotationRate')
+  input.init('devicemotion', 'accelerationIncludingGravity', 'acceleration', 'rotationRate', 'deviceorientation', 'orientation')
     .then((modules) => {
       const [
-        deviceorientation,
         devicemotion,
-        orientation,
         accelerationIncludingGravity,
         acceleration,
-        rotationRate
+        rotationRate,
+        deviceorientation,
+        orientation
       ] = modules;
 
       displayProvidedSensors(modules);
-      displayDeviceorientationRaw(deviceorientation);
       displayDevicemotionRaw(devicemotion);
-      displayOrientation(orientation)
       displayAccelerationIncludingGravity(accelerationIncludingGravity);
       displayAcceleration(acceleration);
       displayRotationRate(rotationRate);
+      displayDeviceorientationRaw(deviceorientation);
+      displayOrientation(orientation)
     });
-
-  // input.orientationModule.on('orientation:values', () => {
-  //   if (orientationSupported) {
-  //     orientationAbsolute.textContent = input.orientationModule.lastRawEvent.absolute + "";
-  //     orientationWebkitCompassHeading.textContent = roundValue(input.orientationModule.lastRawEvent.webkitCompassHeading);
-  //     orientationWebkitCompassAccuracy.textContent = roundValue(input.orientationModule.lastRawEvent.webkitCompassAccuracy);
-  //   }
-
-  //   if (!rotationRateSupported && input.rotationRate) {
-  //     rotationRateAlphaUnified.textContent = roundValue(input.rotationRate.alpha);
-  //     rotationRateBetaUnified.textContent = roundValue(input.rotationRate.beta);
-  //     rotationRateGammaUnified.textContent = roundValue(input.rotationRate.gamma);
-  //   }
-  // });
-
-  // input.motionModule.on('motion:values', () => {
-  //   if (!orientationSupported) {
-  //     orientationBetaUnified.textContent = roundValue(input.orientation.beta);
-  //     orientationGammaUnified.textContent = roundValue(input.orientation.gamma);
-  //   }
-
-  //   if (rotationRateSupported) {
-  //     rotationRateAlphaRaw.textContent = roundValue(input.motionModule.lastRawEvent.rotationRate.alpha);
-  //     rotationRateBetaRaw.textContent = roundValue(input.motionModule.lastRawEvent.rotationRate.beta);
-  //     rotationRateGammaRaw.textContent = roundValue(input.motionModule.lastRawEvent.rotationRate.gamma);
-  //   } else {
-  //     rotationRateAlphaUnified.textContent = roundValue(input.rotationRate.alpha);
-  //     rotationRateBetaUnified.textContent = roundValue(input.rotationRate.beta);
-  //     rotationRateGammaUnified.textContent = roundValue(input.rotationRate.gamma);
-  //   }
-  // });
 }());

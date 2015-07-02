@@ -4,13 +4,12 @@ class InputModule {
     this.listeners = [];
     this.event = [];
     this.promise = null;
-    
-    // List of the modules this module depends on
-    this.parents = [];
 
     // Indicators about whether the module can provide values or not
     this.isCalculated = false;
     this.isProvided = false;
+
+    this.period = undefined;
   }
 
   init(promiseFun) {
