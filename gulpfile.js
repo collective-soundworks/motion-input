@@ -5,8 +5,6 @@ var rename = require('gulp-rename');
 var source = require('vinyl-source-stream');
 var watch = require('gulp-watch');
 
-var watchOthers = ['../input/'];
-
 gulp.task('browserify', ['transpile-app'], function() {
   var bundleStream = browserify('./test-app/index.js').bundle();
  
