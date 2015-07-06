@@ -14,45 +14,18 @@
     <table class="table">
       <thead>
         <tr>
-          <th class="col-xs-3">Orientation</th>
           <th class="col-xs-3">Acceleration Including Gravity</th>
           <th class="col-xs-3">Acceleration</th>
           <th class="col-xs-3">Rotation Rate</th>
+          <th class="col-xs-3">Orientation</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td id="orientationProvided" class="danger">No</td>
           <td id="accelerationIncludingGravityProvided" class="danger">No</td>
           <td id="accelerationProvided" class="danger">No</td>
           <td id="rotationRateProvided" class="danger">No</td>
-        </tr>
-      </tbody>
-    </table>
-
-
-    <h3>Orientation (Tait-Bryan angles Z-X'-Y'')</h3>
-    <table class="table">
-      <thead>
-        <tr>
-          <th></th>
-          <th>alpha</th>
-          <th>beta</th>
-          <th>gamma</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th class="col-xs-3">raw</th>
-          <td id="orientationAlphaRaw" class="col-xs-3">-</td>
-          <td id="orientationBetaRaw" class="col-xs-3">-</td>
-          <td id="orientationGammaRaw" class="col-xs-3">-</td>
-        </tr>
-        <tr>
-          <th>unified</th>
-          <td id="orientationAlphaUnified">-</td>
-          <td id="orientationBetaUnified">-</td>
-          <td id="orientationGammaUnified">-</td>
+          <td id="orientationProvided" class="danger">No</td>
         </tr>
       </tbody>
     </table>
@@ -131,6 +104,70 @@
           <td id="rotationRateAlphaUnified">-</td>
           <td id="rotationRateBetaUnified">-</td>
           <td id="rotationRateGammaUnified">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Orientation</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>alpha</th>
+          <th>beta</th>
+          <th>gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="orientationAlphaRaw" class="col-xs-3">-</td>
+          <td id="orientationBetaRaw" class="col-xs-3">-</td>
+          <td id="orientationGammaRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="orientationAlphaUnified">-</td>
+          <td id="orientationBetaUnified">-</td>
+          <td id="orientationGammaUnified">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Orientation (Alternative)</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-3"></th>
+          <th class="col-xs-3">alpha</th>
+          <th class="col-xs-3">beta</th>
+          <th class="col-xs-3">gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">unified</th>
+          <td id="orientationAltAlpha">-</td>
+          <td id="orientationAltBeta">-</td>
+          <td id="orientationAltGamma">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Energy</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-3"></th>
+          <th class="col-xs-3">value</th>
+          <th class="col-xs-6"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td id="energy">-</td>
+          <td></td>
         </tr>
       </tbody>
     </table>

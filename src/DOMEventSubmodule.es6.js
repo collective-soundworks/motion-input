@@ -1,3 +1,5 @@
+'use strict';
+
 const InputModule = require('./InputModule');
 
 class DOMEventSubmodule extends InputModule {
@@ -6,9 +8,7 @@ class DOMEventSubmodule extends InputModule {
 
     this.DOMEventModule = DOMEventModule;
 
-    this.event[0] = 0;
-    this.event[1] = 0;
-    this.event[2] = 0;
+    this.event = [0, 0, 0];
   }
 
   start() {

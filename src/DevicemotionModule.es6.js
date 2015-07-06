@@ -1,4 +1,5 @@
-// const audioContext = require('waves-audio').audioContext;
+'use strict';
+
 const InputModule = require('./InputModule');
 const DOMEventSubmodule = require('./DOMEventSubmodule');
 const MotionInput = require('./MotionInput');
@@ -7,8 +8,6 @@ const platform = require('platform');
 function getLocalTime() {
   if (window.performance)
     return performance.now() / 1000;
-  // else if (audioContext)
-  //   return audioContext.currentTime;
   return Date.now() / 1000;
 }
 
@@ -16,15 +15,7 @@ class DevicemotionModule extends InputModule {
   constructor() {
     super('devicemotion');
 
-    this.event[0] = undefined;
-    this.event[1] = undefined;
-    this.event[2] = undefined;
-    this.event[3] = undefined;
-    this.event[4] = undefined;
-    this.event[5] = undefined;
-    this.event[6] = undefined;
-    this.event[7] = undefined;
-    this.event[8] = undefined;
+    this.event = [null, null, null, null, null, null, null, null, null];
 
     this.accelerationIncludingGravity = new DOMEventSubmodule(this, 'accelerationIncludingGravity');
     this.acceleration = new DOMEventSubmodule(this, 'acceleration');
@@ -36,17 +27,25 @@ class DevicemotionModule extends InputModule {
       rotationRate: false
     };
 
-    this._devicemotionCheck = this._devicemotionCheck.bind(this);
-    this._devicemotionListener = this._devicemotionListener.bind(this);
-
     this._numListeners = 0;
     this._promiseResolve = null;
-    this._unify = (platform.os.family === 'iOS' ? -1 : 1);
+    
+    this._unifyMotionData = (platform.os.family === 'iOS' ? -1 : 1);
+    this._unifyPeriod = (platform.os.family === 'Android' ? 1000 : 1);
 
     this._calculatedRotationRate = [0, 0, 0];
-    this._estimatedGravity = [0, 0, 0];
+    this._calculatedAcceleration = [0, 0, 0];
+    this._calculatedAccelerationTimeConstant = 0.100;
+    this._lastAccelerationIncludingGravity = [0, 0, 0];
     this._lastOrientation = [0, 0, 0];
     this._lastOrientationTimestamp = null;
+
+    this._devicemotionCheck = this._devicemotionCheck.bind(this);
+    this._devicemotionListener = this._devicemotionListener.bind(this);
+  }
+
+  get _calculatedAccelerationDecay() {
+    return Math.exp(-2 * Math.PI * this.accelerationIncludingGravity.period / this._calculatedAccelerationTimeConstant);
   }
 
   _devicemotionCheck(e) {
@@ -60,7 +59,7 @@ class DevicemotionModule extends InputModule {
       (typeof e.accelerationIncludingGravity.y === 'number') &&
       (typeof e.accelerationIncludingGravity.z === 'number')
     );
-    this.accelerationIncludingGravity.period = e.interval / 1000;
+    this.accelerationIncludingGravity.period = e.interval / this._unifyPeriod;
 
     this.acceleration.isProvided = (
       e.acceleration &&
@@ -68,7 +67,7 @@ class DevicemotionModule extends InputModule {
       (typeof e.acceleration.y === 'number') &&
       (typeof e.acceleration.z === 'number')
     );
-    this.acceleration.period = e.interval / 1000;
+    this.acceleration.period = e.interval / this._unifyPeriod;
 
     this.rotationRate.isProvided = (
       e.rotationRate &&
@@ -76,7 +75,7 @@ class DevicemotionModule extends InputModule {
       (typeof e.rotationRate.beta === 'number') &&
       (typeof e.rotationRate.gamma === 'number')
     );
-    this.rotationRate.period = e.interval / 1000;
+    this.rotationRate.period = e.interval / this._unifyPeriod;
 
 
     window.removeEventListener('devicemotion', this._devicemotionCheck, false);
@@ -141,9 +140,9 @@ class DevicemotionModule extends InputModule {
   _emitAccelerationIncludingGravityEvent(e) {
     let outEvent = this.accelerationIncludingGravity.event;
 
-    outEvent[0] = e.accelerationIncludingGravity.x * this._unify;
-    outEvent[1] = e.accelerationIncludingGravity.y * this._unify;
-    outEvent[2] = e.accelerationIncludingGravity.z * this._unify;
+    outEvent[0] = e.accelerationIncludingGravity.x * this._unifyMotionData;
+    outEvent[1] = e.accelerationIncludingGravity.y * this._unifyMotionData;
+    outEvent[2] = e.accelerationIncludingGravity.z * this._unifyMotionData;
 
     this.accelerationIncludingGravity.emit(outEvent);
   }
@@ -153,30 +152,31 @@ class DevicemotionModule extends InputModule {
 
     if (this.acceleration.isProvided) {
       // If raw acceleration values are provided
-      outEvent[0] = e.acceleration.x * this._unify;
-      outEvent[1] = e.acceleration.y * this._unify;
-      outEvent[2] = e.acceleration.z * this._unify;
+      outEvent[0] = e.acceleration.x * this._unifyMotionData;
+      outEvent[1] = e.acceleration.y * this._unifyMotionData;
+      outEvent[2] = e.acceleration.z * this._unifyMotionData;
     } else if (this.accelerationIncludingGravity.isValid) {
       // Otherwise, if accelerationIncludingGravity values are provided,
-      // estimate the acceleration with a low pass filter
+      // estimate the acceleration with a high-pass filter
       const accelerationIncludingGravity = [
-        e.accelerationIncludingGravity.x * this._unify,
-        e.accelerationIncludingGravity.y * this._unify,
-        e.accelerationIncludingGravity.z * this._unify
+        e.accelerationIncludingGravity.x * this._unifyMotionData,
+        e.accelerationIncludingGravity.y * this._unifyMotionData,
+        e.accelerationIncludingGravity.z * this._unifyMotionData
       ];
-      const k = 0.8;
+      const k = this._calculatedAccelerationDecay;
 
-      // Low pass filter to estimate the gravity
-      this._estimatedGravity[0] = k * this._estimatedGravity[0] + (1 - k) * accelerationIncludingGravity[0];
-      this._estimatedGravity[1] = k * this._estimatedGravity[1] + (1 - k) * accelerationIncludingGravity[1];
-      this._estimatedGravity[2] = k * this._estimatedGravity[2] + (1 - k) * accelerationIncludingGravity[2];
+      // High-pass filter to estimate the acceleration without the gravity
+      this._calculatedAcceleration[0] = (1 + k) * 0.5 * accelerationIncludingGravity[0] - (1 + k) * 0.5 * this._lastAccelerationIncludingGravity[0] + k * this._calculatedAcceleration[0];
+      this._calculatedAcceleration[1] = (1 + k) * 0.5 * accelerationIncludingGravity[1] - (1 + k) * 0.5 * this._lastAccelerationIncludingGravity[1] + k * this._calculatedAcceleration[1];
+      this._calculatedAcceleration[2] = (1 + k) * 0.5 * accelerationIncludingGravity[2] - (1 + k) * 0.5 * this._lastAccelerationIncludingGravity[2] + k * this._calculatedAcceleration[2];
 
-      // Substract estimated gravity from the accelerationIncludingGravity values
-      outEvent[0] = accelerationIncludingGravity[0] - this._estimatedGravity[0];
-      outEvent[1] = accelerationIncludingGravity[1] - this._estimatedGravity[1];
-      outEvent[2] = accelerationIncludingGravity[2] - this._estimatedGravity[2];
-    } else {
-      // TODO: throw error?
+      this._lastAccelerationIncludingGravity[0] = accelerationIncludingGravity[0];
+      this._lastAccelerationIncludingGravity[1] = accelerationIncludingGravity[1];
+      this._lastAccelerationIncludingGravity[2] = accelerationIncludingGravity[2];
+
+      outEvent[0] = this._calculatedAcceleration[0];
+      outEvent[1] = this._calculatedAcceleration[1];
+      outEvent[2] = this._calculatedAcceleration[2];
     }
 
     this.acceleration.emit(outEvent);
@@ -197,11 +197,10 @@ class DevicemotionModule extends InputModule {
   _calculateRotationRateFromOrientation(orientation) {
     const now = getLocalTime();
     const k = 0.8;
-
-    // TODO: manage the case where alpha = null
+    const alphaIsValid = (typeof orientation[0] === 'number');
 
     if (this._lastOrientationTimestamp) {
-      let rAlpha;
+      let rAlpha = null;
       let rBeta;
       let rGamma;
 
@@ -211,11 +210,13 @@ class DevicemotionModule extends InputModule {
 
       const deltaT = now - this._lastOrientationTimestamp;
 
-      // alpha discontinuity (+360 -> 0 or 0 -> +360)
-      if (this._lastOrientation[0] > 320 && orientation[0] < 40)
-        alphaDiscontinuityFactor = 360;
-      else if (this._lastOrientation[0] < 40 && orientation[0] > 320)
-        alphaDiscontinuityFactor = -360;
+      if (alphaIsValid) {
+        // alpha discontinuity (+360 -> 0 or 0 -> +360)
+        if (this._lastOrientation[0] > 320 && orientation[0] < 40)
+          alphaDiscontinuityFactor = 360;
+        else if (this._lastOrientation[0] < 40 && orientation[0] > 320)
+          alphaDiscontinuityFactor = -360;
+      }
 
       // beta discontinuity (+180 -> -180 or -180 -> +180)
       if (this._lastOrientation[1] > 140 && orientation[1] < -140)
@@ -231,7 +232,8 @@ class DevicemotionModule extends InputModule {
 
       if (deltaT > 0) {
         // Low pass filter to smooth the data
-        rAlpha = k * this._calculatedRotationRate[0] + (1 - k) * (orientation[0] - this._lastOrientation[0] + alphaDiscontinuityFactor) / deltaT;
+        if (alphaIsValid)
+          rAlpha = k * this._calculatedRotationRate[0] + (1 - k) * (orientation[0] - this._lastOrientation[0] + alphaDiscontinuityFactor) / deltaT;
         rBeta = k * this._calculatedRotationRate[1] + (1 - k) * (orientation[1] - this._lastOrientation[1] + betaDiscontinuityFactor) / deltaT;
         rGamma = k * this._calculatedRotationRate[2] + (1 - k) * (orientation[2] - this._lastOrientation[2] + gammaDiscontinuityFactor) / deltaT;
 
@@ -282,12 +284,12 @@ class DevicemotionModule extends InputModule {
   }
 
   init() {
-    return super.init((resolve, reject) => {
+    return super.init((resolve) => {
       this._promiseResolve = resolve;
 
       if (window.DeviceMotionEvent)
         window.addEventListener('devicemotion', this._devicemotionCheck, false);
-      
+
       // WARNING
       // The lines of code below are commented because of a bug of Chrome
       // on some Android devices, where 'devicemotion' events are not sent
@@ -299,7 +301,7 @@ class DevicemotionModule extends InputModule {
 
       // else if (this.required.rotationRate)
       // this._tryOrientationFallback();
-      
+
       else
         resolve(this);
     });

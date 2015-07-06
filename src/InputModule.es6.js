@@ -1,8 +1,10 @@
+'use strict';
+
 class InputModule {
   constructor(eventType) {
     this.eventType = eventType;
     this.listeners = [];
-    this.event = [];
+    this.event = null;
     this.promise = null;
 
     // Indicators about whether the module can provide values or not
@@ -10,6 +12,10 @@ class InputModule {
     this.isProvided = false;
 
     this.period = undefined;
+  }
+
+  get isValid() {
+    return (this.isProvided || this.isCalculated);
   }
 
   init(promiseFun) {
@@ -43,10 +49,6 @@ class InputModule {
   emit(event = this.event) {
     for (let listener of this.listeners)
       listener(event);
-  }
-
-  get isValid() {
-    return (this.isProvided || this.isCalculated);
   }
 }
 

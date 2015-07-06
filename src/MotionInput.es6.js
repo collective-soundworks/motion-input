@@ -1,3 +1,5 @@
+'use strict';
+
 class MotionInput {
   constructor() {
     // list of required modules (eventTypes)
