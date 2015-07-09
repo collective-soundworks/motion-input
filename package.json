@@ -1,7 +1,7 @@
 {
   "name": "motion-input",
-  "version": "0.0.1",
-  "description": "Motion input module.",
+  "version": "1.0.0",
+  "description": "The motion input module provides unified motion data across iOS and Android platforms.",
   "authors": [
     "Sebastien.Robaszkiewicz@ircam.fr",
     "Norbert.Schnell@ircam.fr"

@@ -1,6 +1,11 @@
-'use strict';
-require('babel/polyfill');
+/**
+ * @fileoverview Motion input test app
+ * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
+ */
 
+'use strict';
+
+require('babel/polyfill');
 const input = require('../src');
 
 // Sensor support DOM elements
