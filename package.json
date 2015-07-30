@@ -1,22 +1,47 @@
 {
   "name": "motion-input",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The motion input module provides unified motion data across iOS and Android platforms.",
-  "authors": [
-    "Sebastien.Robaszkiewicz@ircam.fr",
-    "Norbert.Schnell@ircam.fr"
+  "main": "motion-input.js",
+  "contributors": [
+    {
+      "name": "Sébastien Robaszkiewicz",
+      "email": "sebastien@robaszkiewicz.com",
+      "url": "http://robi.me"
+    },
+    {
+      "name": "Norbert Schnell",
+      "email": "Norbert.Schnell@ircam.fr"
+    }
   ],
+  "repository": "collective-soundworks/motion-input",
+  "standalone": "motionInput",
+  "scripts": {
+    "transpile": "node ./bin/scripts.js --transpile",
+    "prebundle": "npm run hint && npm run transpile",
+    "bundle": "node ./bin/scripts.js --bundle",
+    "postbundle": "npm run uglify",
+    "uglify": "node ./bin/scripts.js --uglify",
+    "watch": "node ./bin/scripts.js --watch",
+    "hint": "jshint ./src; true"
+  },
+  "jshintConfig": {
+    "esnext": true,
+    "browser": true,
+    "node": true,
+    "devel": true
+  },
   "dependencies": {
-    "babel": "^5.6.14",
+    "babel-runtime": "^5.8.19",
     "platform": "^1.3.0"
   },
   "devDependencies": {
-    "browserify": "^10.2.4",
-    "gulp": "^3.9.0",
-    "gulp-babel": "^5.1.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-watch": "^4.2.4",
-    "vinyl-source-stream": "^1.1.0",
-    "vinyl-transform": "^1.0.0"
+    "babel": "^5.8.19",
+    "browserify": "^11.0.1",
+    "cli-color": "^1.0.0",
+    "fs-extra": "^0.22.1",
+    "jshint": "^2.8.0",
+    "node-watch": "^0.3.4",
+    "uglify-js": "^2.4.24"
   }
 }

@@ -1,0 +1,392 @@
+<!doctype html5>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Motion Input Test</title>
+  <link rel="stylesheet" type="text/css" href="assets/bootstrap.css">
+</head>
+
+<body>
+  <div class="container">
+    <h1>Motion Input Test</h1>
+
+    <h3>Raw values provided</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-3">Acceleration Including Gravity</th>
+          <th class="col-xs-3">Acceleration</th>
+          <th class="col-xs-3">Rotation Rate</th>
+          <th class="col-xs-3">Orientation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td id="accelerationIncludingGravityProvided" class="danger">No</td>
+          <td id="accelerationProvided" class="danger">No</td>
+          <td id="rotationRateProvided" class="danger">No</td>
+          <td id="orientationProvided" class="danger">No</td>
+        </tr>
+      </tbody>
+    </table>
+    
+    <h3>Acceleration Including Gravity</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>x</th>
+          <th>y</th>
+          <th>z</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="accelerationIncludingGravityXRaw" class="col-xs-3">-</td>
+          <td id="accelerationIncludingGravityYRaw" class="col-xs-3">-</td>
+          <td id="accelerationIncludingGravityZRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="accelerationIncludingGravityXUnified">-</td>
+          <td id="accelerationIncludingGravityYUnified">-</td>
+          <td id="accelerationIncludingGravityZUnified">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Acceleration</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>x</th>
+          <th>y</th>
+          <th>z</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="accelerationXRaw" class="col-xs-3">-</td>
+          <td id="accelerationYRaw" class="col-xs-3">-</td>
+          <td id="accelerationZRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="accelerationXUnified">-</td>
+          <td id="accelerationYUnified">-</td>
+          <td id="accelerationZUnified">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Rotation Rate</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>alpha</th>
+          <th>beta</th>
+          <th>gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="rotationRateAlphaRaw" class="col-xs-3">-</td>
+          <td id="rotationRateBetaRaw" class="col-xs-3">-</td>
+          <td id="rotationRateGammaRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="rotationRateAlphaUnified">-</td>
+          <td id="rotationRateBetaUnified">-</td>
+          <td id="rotationRateGammaUnified">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Orientation</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th></th>
+          <th>alpha</th>
+          <th>beta</th>
+          <th>gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">raw</th>
+          <td id="orientationAlphaRaw" class="col-xs-3">-</td>
+          <td id="orientationBetaRaw" class="col-xs-3">-</td>
+          <td id="orientationGammaRaw" class="col-xs-3">-</td>
+        </tr>
+        <tr>
+          <th>unified</th>
+          <td id="orientationAlphaUnified">-</td>
+          <td id="orientationBetaUnified">-</td>
+          <td id="orientationGammaUnified">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Orientation (Alternative)</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-3"></th>
+          <th class="col-xs-3">alpha</th>
+          <th class="col-xs-3">beta</th>
+          <th class="col-xs-3">gamma</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th class="col-xs-3">unified</th>
+          <td id="orientationAltAlpha">-</td>
+          <td id="orientationAltBeta">-</td>
+          <td id="orientationAltGamma">-</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Energy</h3>
+    <table class="table">
+      <thead>
+        <tr>
+          <th class="col-xs-3"></th>
+          <th class="col-xs-3">value</th>
+          <th class="col-xs-6"></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td id="energy">-</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+  <script src="../motion-input.umd.js"></script>
+  <script>
+  // Sensor support DOM elements
+  var accelerationIncludingGravityProvided = document.getElementById('accelerationIncludingGravityProvided');
+  var accelerationProvided = document.getElementById('accelerationProvided');
+  var rotationRateProvided = document.getElementById('rotationRateProvided');
+  var orientationProvided = document.getElementById('orientationProvided');
+
+  // Acceleration including gravity DOM elements
+  var accelerationIncludingGravityXRaw = document.getElementById('accelerationIncludingGravityXRaw');
+  var accelerationIncludingGravityYRaw = document.getElementById('accelerationIncludingGravityYRaw');
+  var accelerationIncludingGravityZRaw = document.getElementById('accelerationIncludingGravityZRaw');
+
+  var accelerationIncludingGravityXUnified = document.getElementById('accelerationIncludingGravityXUnified');
+  var accelerationIncludingGravityYUnified = document.getElementById('accelerationIncludingGravityYUnified');
+  var accelerationIncludingGravityZUnified = document.getElementById('accelerationIncludingGravityZUnified');
+
+  // Acceleration DOM elements
+  var accelerationXRaw = document.getElementById('accelerationXRaw');
+  var accelerationYRaw = document.getElementById('accelerationYRaw');
+  var accelerationZRaw = document.getElementById('accelerationZRaw');
+
+  var accelerationXUnified = document.getElementById('accelerationXUnified');
+  var accelerationYUnified = document.getElementById('accelerationYUnified');
+  var accelerationZUnified = document.getElementById('accelerationZUnified');
+
+  // Rotation rate DOM elements
+  var rotationRateAlphaRaw = document.getElementById('rotationRateAlphaRaw');
+  var rotationRateBetaRaw = document.getElementById('rotationRateBetaRaw');
+  var rotationRateGammaRaw = document.getElementById('rotationRateGammaRaw');
+
+  var rotationRateAlphaUnified = document.getElementById('rotationRateAlphaUnified');
+  var rotationRateBetaUnified = document.getElementById('rotationRateBetaUnified');
+  var rotationRateGammaUnified = document.getElementById('rotationRateGammaUnified');
+
+  // Orientation DOM elements
+  var orientationAlphaRaw = document.getElementById('orientationAlphaRaw');
+  var orientationBetaRaw = document.getElementById('orientationBetaRaw');
+  var orientationGammaRaw = document.getElementById('orientationGammaRaw');
+
+  var orientationAlphaUnified = document.getElementById('orientationAlphaUnified');
+  var orientationBetaUnified = document.getElementById('orientationBetaUnified');
+  var orientationGammaUnified = document.getElementById('orientationGammaUnified');
+
+  // Orientation (Alternative) DOM elements
+  var orientationAltAlpha = document.getElementById('orientationAltAlpha');
+  var orientationAltBeta = document.getElementById('orientationAltBeta');
+  var orientationAltGamma = document.getElementById('orientationAltGamma');
+
+  // Energy DOM elements
+  var energyFast = document.getElementById('energyFast');
+  var energySlow = document.getElementById('energySlow');
+
+  function roundValue(input) {
+    if (input === undefined)
+      return 'undefined';
+    if (input === null)
+      return 'null';
+
+    return Math.round(input * 100) / 100;
+  }
+
+  function displayProvidedSensors(modules) {
+    var devicemotion = modules[0];
+    var accelerationIncludingGravity = modules[1];
+    var acceleration = modules[2];
+    var rotationRate = modules[3];
+    var deviceorientation = modules[4];
+    var orientation = modules[5];
+    var orientationAlt = modules[6];
+    var energy = modules[7];
+
+    if (accelerationIncludingGravity.isProvided) {
+      accelerationIncludingGravityProvided.textContent = 'Yes';
+      accelerationIncludingGravityProvided.classList.add('success');
+      accelerationIncludingGravityProvided.classList.remove('danger');
+    }
+
+    if (acceleration.isProvided) {
+      accelerationProvided.textContent = 'Yes';
+      accelerationProvided.classList.add('success');
+      accelerationProvided.classList.remove('danger');
+    }
+
+    if (rotationRate.isProvided) {
+      rotationRateProvided.textContent = 'Yes';
+      rotationRateProvided.classList.add('success');
+      rotationRateProvided.classList.remove('danger');
+    }
+
+    if (orientation.isProvided) {
+      orientationProvided.textContent = 'Yes';
+      orientationProvided.classList.add('success');
+      orientationProvided.classList.remove('danger');
+    }
+  }
+
+  function displayDeviceorientationRaw(module) {
+    if (module.isValid) {
+      motionInput.addListener('deviceorientation', function(val) {
+        orientationAlphaRaw.textContent = roundValue(val[0]);
+        orientationBetaRaw.textContent = roundValue(val[1]);
+        orientationGammaRaw.textContent = roundValue(val[2]);
+      });
+    }
+  }
+
+  function displayDevicemotionRaw(module) {
+    if (module.isValid) {
+      motionInput.addListener('devicemotion', function(val) {
+        accelerationIncludingGravityXRaw.textContent = roundValue(val[0]);
+        accelerationIncludingGravityYRaw.textContent = roundValue(val[1]);
+        accelerationIncludingGravityZRaw.textContent = roundValue(val[2]);
+
+        accelerationXRaw.textContent = roundValue(val[3]);
+        accelerationYRaw.textContent = roundValue(val[4]);
+        accelerationZRaw.textContent = roundValue(val[5]);
+
+        rotationRateAlphaRaw.textContent = roundValue(val[6]);
+        rotationRateBetaRaw.textContent = roundValue(val[7]);
+        rotationRateGammaRaw.textContent = roundValue(val[8]);
+      });
+    }
+  }
+
+  function displayAccelerationIncludingGravity(module) {
+    if (module.isValid) {
+      motionInput.addListener('accelerationIncludingGravity', function(val) {
+        accelerationIncludingGravityXUnified.textContent = roundValue(val[0]);
+        accelerationIncludingGravityYUnified.textContent = roundValue(val[1]);
+        accelerationIncludingGravityZUnified.textContent = roundValue(val[2]);
+      });
+    }
+  }
+
+  function displayAcceleration(module) {
+    if (module.isValid) {
+      motionInput.addListener('acceleration', function(val) {
+        accelerationXUnified.textContent = roundValue(val[0]);
+        accelerationYUnified.textContent = roundValue(val[1]);
+        accelerationZUnified.textContent = roundValue(val[2]);
+      });
+    }
+  }
+
+  function displayRotationRate(module) {
+    if (module.isValid) {
+      motionInput.addListener('rotationRate', function(val) {
+        rotationRateAlphaUnified.textContent = roundValue(val[0]);
+        rotationRateBetaUnified.textContent = roundValue(val[1]);
+        rotationRateGammaUnified.textContent = roundValue(val[2]);
+      });
+    }
+  }
+
+  function displayOrientation(module) {
+    if (module.isValid) {
+      motionInput.addListener('orientation', function(val) {
+        orientationAlphaUnified.textContent = roundValue(val[0]);
+        orientationBetaUnified.textContent = roundValue(val[1]);
+        orientationGammaUnified.textContent = roundValue(val[2]);
+      });
+    }
+  }
+
+  function displayOrientationAlt(module) {
+    if (module.isValid) {
+      motionInput.addListener('orientationAlt', function(val) {
+        orientationAltAlpha.textContent = roundValue(val[0]);
+        orientationAltBeta.textContent = roundValue(val[1]);
+        orientationAltGamma.textContent = roundValue(val[2]);
+      });
+    }
+  }
+
+  function displayEnergy(module) {
+    if (module.isValid) {
+      motionInput.addListener('energy', function(val) {
+        energy.textContent = roundValue(val);
+      });
+    }
+  }
+
+  (function() {
+    motionInput.init(
+      'devicemotion',
+      'accelerationIncludingGravity',
+      'acceleration',
+      'rotationRate',
+      'deviceorientation',
+      'orientation',
+      'orientationAlt',
+      'energy'
+    ).then(function(modules) {
+      var devicemotion = modules[0];
+      var accelerationIncludingGravity = modules[1];
+      var acceleration = modules[2];
+      var rotationRate = modules[3];
+      var deviceorientation = modules[4];
+      var orientation = modules[5];
+      var orientationAlt = modules[6];
+      var energy = modules[7];
+
+      displayProvidedSensors(modules);
+      displayDevicemotionRaw(devicemotion);
+      displayAccelerationIncludingGravity(accelerationIncludingGravity);
+      displayAcceleration(acceleration);
+      displayRotationRate(rotationRate);
+      displayDeviceorientationRaw(deviceorientation);
+      displayOrientation(orientation);
+      displayOrientationAlt(orientationAlt);
+      displayEnergy(energy);
+    });
+  }());
+  </script>
+</body>
+</html>

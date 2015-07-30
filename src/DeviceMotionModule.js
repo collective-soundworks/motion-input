@@ -18,7 +18,7 @@ const platform = require('platform');
  */
 function getLocalTime() {
   if (window.performance)
-    return performance.now() / 1000;
+    return window.performance.now() / 1000;
   return Date.now() / 1000;
 }
 
@@ -454,7 +454,7 @@ class DeviceMotionModule extends InputModule {
       if (this._lastOrientation[1] > 140 && orientation[1] < -140)
         betaDiscontinuityFactor = 360;
       else if (this._lastOrientation[1] < -140 && orientation[1] > 140)
-        betaDiscontinuityFactor = -360
+        betaDiscontinuityFactor = -360;
 
       // gamma discontinuities (+180 -> -180 or -180 -> +180)
       if (this._lastOrientation[2] > 50 && orientation[2] < -50)
@@ -496,7 +496,7 @@ class DeviceMotionModule extends InputModule {
           this.rotationRate.isCalculated = true;
 
           MotionInput.addListener('orientation', (orientation) => {
-            this._calculateRotationRateFromOrientation(orientation)
+            this._calculateRotationRateFromOrientation(orientation);
           });
         }
 

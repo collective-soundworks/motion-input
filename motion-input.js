@@ -1,5 +1,5 @@
 /**
- * @fileoverview Motion Input index file
+ * @fileoverview Motion input index file
  * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
  * @description The motion input module can be used as follows:
  * ```
@@ -25,10 +25,10 @@
 
 'use strict';
 
-const motionInput = require('./MotionInput');
-const deviceorientationModule = require('./DeviceOrientationModule');
-const deviceotionModule = require('./DeviceMotionModule');
-const energy = require('./EnergyModule');
+var motionInput = require('./dist/MotionInput');
+var deviceorientationModule = require('./dist/DeviceOrientationModule');
+var devicemotionModule = require('./dist/DeviceMotionModule');
+var energy = require('./dist/EnergyModule');
 
 motionInput.addModule('devicemotion', devicemotionModule);
 motionInput.addModule('deviceorientation', deviceorientationModule);
