@@ -13,7 +13,6 @@ var util = require('util');
 // -----------------------------------------------
 var srcDir = 'src';
 var distDir = 'dist';
-var exampleDir = 'example';
 
 // options for babel
 var babelOptions = {
@@ -78,13 +77,6 @@ function getMinName() {
 // watch source dir
 function watch() {
   nodeWatch(srcDir, function(filename) {
-    transpile(filename);
-  });
-}
-
-// watch example dir
-function watch() {
-  nodeWatch(exampleDir, function(filename) {
     transpile(filename);
   });
 }
