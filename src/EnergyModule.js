@@ -63,7 +63,7 @@ class EnergyModule extends InputModule {
      * @type {number}
      * @default 9.81
      */
-    this._accelerationMagnitudeCurrentMax = 9.81;
+    this._accelerationMagnitudeCurrentMax = 2 * 9.81;
 
     /**
      * Clipping value of the acceleration magnitude.
@@ -73,7 +73,7 @@ class EnergyModule extends InputModule {
      * @default 20
      * @constant
      */
-    this._accelerationMagnitudeThreshold = 20;
+    this._accelerationMagnitudeThreshold = 4 * 9.81;
 
     /**
      * The rotation rate module, used in the calculation of the energy.
@@ -99,9 +99,9 @@ class EnergyModule extends InputModule {
      *
      * @this EnergyModule
      * @type {number}
-     * @default 200
+     * @default 400
      */
-    this._rotationRateMagnitudeCurrentMax = 200;
+    this._rotationRateMagnitudeCurrentMax = 400;
 
     /**
      * Clipping value of the rotation rate magnitude.
@@ -130,7 +130,7 @@ class EnergyModule extends InputModule {
      * @type {function}
      */
     this._onAcceleration = this._onAcceleration.bind(this);
-    
+
     /**
      * Method binding of the rotation rate values callback.
      *
