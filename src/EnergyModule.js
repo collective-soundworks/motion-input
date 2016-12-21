@@ -63,7 +63,7 @@ class EnergyModule extends InputModule {
      * @type {number}
      * @default 9.81
      */
-    this._accelerationMagnitudeCurrentMax = 2 * 9.81;
+    this._accelerationMagnitudeCurrentMax = 1 * 9.81;
 
     /**
      * Clipping value of the acceleration magnitude.
