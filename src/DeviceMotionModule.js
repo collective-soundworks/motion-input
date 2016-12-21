@@ -3,8 +3,6 @@
  * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
  */
 
-'use strict';
-
 const InputModule = require('./InputModule');
 const DOMEventSubmodule = require('./DOMEventSubmodule');
 const MotionInput = require('./MotionInput');
@@ -13,7 +11,7 @@ const platform = require('platform');
 /**
  * Gets the current local time in seconds.
  * Uses `window.performance.now()` if available, and `Date.now()` otherwise.
- * 
+ *
  * @return {number}
  */
 function getLocalTime() {
@@ -68,7 +66,7 @@ class DeviceMotionModule extends InputModule {
      * @type {DOMEventSubmodule}
      */
     this.accelerationIncludingGravity = new DOMEventSubmodule(this, 'accelerationIncludingGravity');
-    
+
     /**
      * The `Acceleration` submodule.
      * Provides unified values of the acceleration.
@@ -125,7 +123,7 @@ class DeviceMotionModule extends InputModule {
      * @see DeviceMotionModule#init
      */
     this._promiseResolve = null;
-    
+
     /**
      * Unifying factor of the motion data values (`1` on Android, `-1` on iOS).
      *
@@ -169,7 +167,7 @@ class DeviceMotionModule extends InputModule {
      * @default [0, 0, 0]
      */
     this._lastAccelerationIncludingGravity = [0, 0, 0];
-  
+
     /**
      * Rotation rate calculated from the orientation values.
      *
@@ -295,7 +293,7 @@ class DeviceMotionModule extends InputModule {
   /**
    * `'devicemotion'` event callback.
    * This method emits an event with the raw `'devicemotion'` values, and emits
-   * events with the unified `accelerationIncludingGravity`, `acceleration`, 
+   * events with the unified `accelerationIncludingGravity`, `acceleration`,
    * and / or `rotationRate` values if they are required.
    *
    * @param {DeviceMotionEvent} e - `'devicemotion'` event the values are calculated from.
@@ -388,9 +386,9 @@ class DeviceMotionModule extends InputModule {
       const k = this._calculatedAccelerationDecay;
 
       // High-pass filter to estimate the acceleration (without the gravity)
-      this._calculatedAcceleration[0] = (1 + k) * 0.5 * accelerationIncludingGravity[0] - (1 + k) * 0.5 * this._lastAccelerationIncludingGravity[0] + k * this._calculatedAcceleration[0];
-      this._calculatedAcceleration[1] = (1 + k) * 0.5 * accelerationIncludingGravity[1] - (1 + k) * 0.5 * this._lastAccelerationIncludingGravity[1] + k * this._calculatedAcceleration[1];
-      this._calculatedAcceleration[2] = (1 + k) * 0.5 * accelerationIncludingGravity[2] - (1 + k) * 0.5 * this._lastAccelerationIncludingGravity[2] + k * this._calculatedAcceleration[2];
+      this._calculatedAcceleration[0] = (1 + k) * 0.5 * (accelerationIncludingGravity[0] - this._lastAccelerationIncludingGravity[0]) + k * this._calculatedAcceleration[0];
+      this._calculatedAcceleration[1] = (1 + k) * 0.5 * (accelerationIncludingGravity[1] - this._lastAccelerationIncludingGravity[1]) + k * this._calculatedAcceleration[1];
+      this._calculatedAcceleration[2] = (1 + k) * 0.5 * (accelerationIncludingGravity[2] - this._lastAccelerationIncludingGravity[2]) + k * this._calculatedAcceleration[2];
 
       this._lastAccelerationIncludingGravity[0] = accelerationIncludingGravity[0];
       this._lastAccelerationIncludingGravity[1] = accelerationIncludingGravity[1];
@@ -567,7 +565,7 @@ class DeviceMotionModule extends InputModule {
 
   /**
    * Adds a listener to this module.
-   * 
+   *
    * @param {function} listener - Listener to add.
    */
   addListener(listener) {
