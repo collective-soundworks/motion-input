@@ -1,18 +1,11 @@
-/**
- * @fileoverview `DeviceOrientation` module
- * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
- */
-
-'use strict';
-
-const DOMEventSubmodule = require('./DOMEventSubmodule');
-const InputModule = require('./InputModule');
-const MotionInput = require('./MotionInput');
-const platform = require('platform');
+import DOMEventSubmodule from './DOMEventSubmodule';
+import InputModule from './InputModule';
+import MotionInput from './MotionInput';
+import platform from 'platform';
 
 /**
  * Converts degrees to radians.
- * 
+ *
  * @param {number} deg - Angle in degrees.
  * @return {number}
  */
@@ -22,7 +15,7 @@ function degToRad(deg) {
 
 /**
  * Converts radians to degrees.
- * 
+ *
  * @param {number} rad - Angle in radians.
  * @return {number}
  */
@@ -32,7 +25,7 @@ function radToDeg(rad) {
 
 /**
  * Normalizes a 3 x 3 matrix.
- * 
+ *
  * @param {number[]} m - Matrix to normalize, represented by an array of length 9.
  * @return {number[]}
  */
@@ -50,7 +43,7 @@ function normalize(m) {
  * - `alpha` is in [0; +360[;
  * - `beta` is in [-180; +180[;
  * - `gamma` is in [-90; +90[.
- * 
+ *
  * @param {number[]} eulerAngle - Euler angle to unify, represented by an array of length 3 (`[alpha, beta, gamma]`).
  * @see {@link http://www.w3.org/TR/orientation-event/}
  */
@@ -154,7 +147,7 @@ function unify(eulerAngle) {
  * - `alpha` is in [0; +360[;
  * - `beta` is in [-90; +90[;
  * - `gamma` is in [-180; +180[.
- * 
+ *
  * @param {number[]} eulerAngle - Euler angle to convert, represented by an array of length 3 (`[alpha, beta, gamma]`).
  */
 function unifyAlt(eulerAngle) {
@@ -283,7 +276,7 @@ class DeviceOrientationModule extends InputModule {
      * @type {number}
      */
     this._numListeners = 0;
-    
+
     /**
      * Resolve function of the module's promise.
      *
@@ -366,7 +359,7 @@ class DeviceOrientationModule extends InputModule {
     outEvent[0] = e.alpha;
     outEvent[1] = e.beta;
     outEvent[2] = e.gamma;
-    
+
     this.emit(outEvent);
 
     // 'orientation' event (unified values)
@@ -517,7 +510,7 @@ class DeviceOrientationModule extends InputModule {
       outEvent[1] = beta;
       outEvent[2] = gamma;
       unify(outEvent);
-      
+
       this.orientation.emit(outEvent);
     }
   }
@@ -578,7 +571,7 @@ class DeviceOrientationModule extends InputModule {
 
   /**
    * Adds a listener to this module.
-   * 
+   *
    * @param {function} listener - Listener to add.
    */
   addListener(listener) {
@@ -597,4 +590,4 @@ class DeviceOrientationModule extends InputModule {
   }
 }
 
-module.exports = new DeviceOrientationModule();
+export default new DeviceOrientationModule();

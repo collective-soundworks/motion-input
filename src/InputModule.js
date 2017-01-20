@@ -1,11 +1,4 @@
 /**
- * @fileoverview `InputModule` module
- * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
- */
-
-'use strict';
-
-/**
  * `InputModule` class.
  * The `InputModule` class allows to instantiate modules that are part of the
  * motion input module, and that provide values (for instance, `deviceorientation`,
@@ -161,4 +154,4 @@ class InputModule {
   }
 }
 
-module.exports = InputModule;
+export default InputModule;

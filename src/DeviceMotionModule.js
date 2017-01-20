@@ -1,12 +1,7 @@
-/**
- * @fileoverview `DeviceMotion` module
- * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
- */
-
-const InputModule = require('./InputModule');
-const DOMEventSubmodule = require('./DOMEventSubmodule');
-const MotionInput = require('./MotionInput');
-const platform = require('platform');
+import InputModule from './InputModule';
+import DOMEventSubmodule from './DOMEventSubmodule';
+import MotionInput from './MotionInput';
+import platform from 'platform';
 
 /**
  * Gets the current local time in seconds.
@@ -584,4 +579,4 @@ class DeviceMotionModule extends InputModule {
   }
 }
 
-module.exports = new DeviceMotionModule();
+export default new DeviceMotionModule();

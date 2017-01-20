@@ -1,12 +1,5 @@
-/**
- * @fileoverview Energy module
- * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
- */
-
-'use strict';
-
-const InputModule = require('./InputModule');
-const MotionInput = require('./MotionInput');
+import InputModule from './InputModule';
+import MotionInput from './MotionInput';
 
 /**
  * Energy module singleton.
@@ -288,4 +281,4 @@ class EnergyModule extends InputModule {
   }
 }
 
-module.exports = new EnergyModule();
+export default new EnergyModule();

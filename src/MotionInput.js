@@ -1,15 +1,8 @@
 /**
- * @fileoverview `MotionInput` module
- * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
- */
-
-'use strict';
-
-/**
  * `MotionInput` singleton.
  * The `MotionInput` singleton allows to initialize motion events
  * and to listen to them.
- * 
+ *
  * @class MotionInput
  */
 class MotionInput {
@@ -106,4 +99,4 @@ class MotionInput {
   }
 }
 
-module.exports = new MotionInput();
+export default new MotionInput();

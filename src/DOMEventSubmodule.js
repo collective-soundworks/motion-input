@@ -1,11 +1,4 @@
-/**
- * @fileoverview `DOMEventSubmodule` module
- * @author <a href='mailto:sebastien@robaszkiewicz.com'>Sébastien Robaszkiewicz</a>, <a href='mailto:Norbert.Schnell@ircam.fr'>Norbert Schnell</a>
- */
-
-'use strict';
-
-const InputModule = require('./InputModule');
+import InputModule from './InputModule';
 
 /**
  * `DOMEventSubmodule` class.
@@ -91,4 +84,4 @@ class DOMEventSubmodule extends InputModule {
   }
 }
 
-module.exports = DOMEventSubmodule;
+export default DOMEventSubmodule;
