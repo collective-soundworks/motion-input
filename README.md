@@ -22,7 +22,8 @@ motionInput
       acceleration.addListener(val => console.log('acceleration', val));
     
     // ...
-  });
+  })
+  .catch(err => console.error(err.stack));
 ```
 
 ## Warning
