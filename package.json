@@ -2,7 +2,7 @@
   "name": "motion-input",
   "version": "1.0.2",
   "description": "Module providing unified motion data across iOS and Android platforms.",
-  "main": "/dist/index.js",
+  "main": "dist/index.js",
   "contributors": [
     {
       "name": "Sébastien Robaszkiewicz",
