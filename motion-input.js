@@ -5,7 +5,7 @@
  * ```
  * const input = require('motion-input');
  * const requiredEvents = ['acceleration', 'orientation', 'energy'];
- * 
+ *
  * input
  *  .init(requiredEvents)
  *  .then((modules) => {
