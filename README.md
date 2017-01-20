@@ -1,23 +1,30 @@
 # motion-input
-The motion input module provides unified motion data across iOS and Android platforms.
 
-The motion input module may be used as follows:
+> The module provides unified motion data across iOS and Android platforms.
+
+
+## Installation
+
+```sh
+npm install [--save] collective-soundworks/motion-input
 ```
-const input = require('motion-input');
-const requiredEvents = ['acceleration', 'orientation', 'energy'];
+
+
+## Usage
+
+```js
+const motionInput = require('motion-input');
  
-input
- .init(requiredEvents)
- .then((modules) => {
-   const [acceleration, orientation, energy] = modules;
-
-   if (acceleration.isValid) {
-     input.addListener('acceleration', (val) => {
-       console.log('acceleration', val);
-       // do something with the acceleration values
-     });
-   }
-
-   // do something else with the other modules
- });
+motionInput
+  .init(['acceleration', 'orientation', 'energy'])
+  .then(([acceleration, orientation, energy]) => {
+    if (acceleration.isValid)
+      acceleration.addListener(val => console.log('acceleration', val));
+    
+    // ...
+  });
 ```
+
+## Warning
+
+Due to some weird (buggy ?) behavior in Chrome and and Firefox, if you need to use both `'acceleration'` and `'orientation'` modules, `'acceleration'` should always be initialized and listened **before** `'orientation'`.
