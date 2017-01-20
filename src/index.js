@@ -18,7 +18,6 @@
  *    // ...
  *  });
  */
-
 import motionInput from './MotionInput';
 import deviceorientationModule from './DeviceOrientationModule';
 import devicemotionModule from './DeviceMotionModule';

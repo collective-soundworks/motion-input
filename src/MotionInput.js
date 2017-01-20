@@ -46,16 +46,16 @@ class MotionInput {
 
   /**
    * Requires a module.
-   * If the module has been initialized alread, returns its promise. Otherwise,
+   * If the module has been initialized already, returns its promise. Otherwise,
    * initializes the module.
    *
    * @param {string} eventType - Name of the event type (module) to require.
    * @return {Promise}
    */
   requireModule(eventType) {
-    let module = this.getModule(eventType);
+    const module = this.getModule(eventType);
 
-    if(module.promise)
+    if (module.promise)
       return module.promise;
 
     return module.init();
@@ -64,12 +64,15 @@ class MotionInput {
   /**
    * Initializes the `MotionInput` module.
    *
-   * @param {string[]} ...eventTypes - Array of the event types to initialize.
+   * @param {Array<String>} eventTypes - Array of the event types to initialize.
    * @return {Promise}
    */
   init(...eventTypes) {
-    let modulePromises = eventTypes.map((value) => {
-      let module = this.getModule(value);
+    if (Array.isArray(eventTypes[0]))
+      eventTypes = eventTypes[0]
+
+    const modulePromises = eventTypes.map((value) => {
+      const module = this.getModule(value);
       return module.init();
     });
 
@@ -83,7 +86,7 @@ class MotionInput {
    * @param {function} listener - Listener to add.
    */
   addListener(eventType, listener) {
-    let module = this.getModule(eventType);
+    const module = this.getModule(eventType);
     module.addListener(listener);
   }
 
@@ -94,7 +97,7 @@ class MotionInput {
    * @param {function} listener - Listener to remove.
    */
   removeListener(eventType, listener) {
-    let module = this.getModule(eventType);
+    const module = this.getModule(eventType);
     module.removeListener(listener);
   }
 }

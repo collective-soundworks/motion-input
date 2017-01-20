@@ -1,5 +1,5 @@
 import InputModule from './InputModule';
-import MotionInput from './MotionInput';
+import motionInput from './MotionInput';
 
 /**
  * Energy module singleton.
@@ -116,20 +116,7 @@ class EnergyModule extends InputModule {
      */
     this._energyTimeConstant = 0.1;
 
-    /**
-     * Method binding of the acceleration values callback.
-     *
-     * @this EnergyModule
-     * @type {function}
-     */
     this._onAcceleration = this._onAcceleration.bind(this);
-
-    /**
-     * Method binding of the rotation rate values callback.
-     *
-     * @this EnergyModule
-     * @type {function}
-     */
     this._onRotationRate = this._onRotationRate.bind(this);
   }
 
@@ -151,7 +138,7 @@ class EnergyModule extends InputModule {
   init() {
     return super.init((resolve) => {
       // The energy module requires the acceleration and the rotation rate modules
-      Promise.all([MotionInput.requireModule('acceleration'), MotionInput.requireModule('rotationRate')])
+      Promise.all([motionInput.requireModule('acceleration'), motionInput.requireModule('rotationRate')])
         .then((modules) => {
           const [acceleration, rotationRate] = modules;
 
@@ -169,26 +156,26 @@ class EnergyModule extends InputModule {
     });
   }
 
-  /**
-   * Start the module.
-   */
-  start() {
-    // TODO(?): make this method private
-    if (this._accelerationModule.isValid)
-      MotionInput.addListener('acceleration', this._onAcceleration);
-    if (this._rotationRateModule.isValid)
-      MotionInput.addListener('rotationRate', this._onRotationRate);
+  addListener(listener) {
+    if (this.listeners.size === 0) {
+      if (this._accelerationModule.isValid)
+        this._accelerationModule.addListener(this._onAcceleration);
+      if (this._rotationRateModule.isValid)
+        this._rotationRateModule.addListener(this._onRotationRate);
+    }
+
+    super.addListener(listener);
   }
 
-  /**
-   * Stop the module.
-   */
-  stop() {
-    // TODO(?): make this method private
-    if (this._accelerationModule.isValid)
-      MotionInput.removeListener('acceleration', this._onAcceleration);
-    if (this._rotationRateModule.isValid)
-      MotionInput.removeListener('rotationRate', this._onRotationRate);
+  removeListener(listener) {
+    super.removeListener(listener);
+
+    if (this.listeners.size === 0) {
+      if (this._accelerationModule.isValid)
+        this._accelerationModule.removeListener(this._onAcceleration);
+      if (this._rotationRateModule.isValid)
+        this._rotationRateModule.removeListener(this._onRotationRate);
+    }
   }
 
   /**

@@ -102,14 +102,6 @@ class DeviceMotionModule extends InputModule {
     };
 
     /**
-     * Number of listeners subscribed to the `DeviceMotion` module.
-     *
-     * @this DeviceMotionModule
-     * @type {number}
-     */
-    this._numListeners = 0;
-
-    /**
      * Resolve function of the module's promise.
      *
      * @this DeviceMotionModule
@@ -190,20 +182,9 @@ class DeviceMotionModule extends InputModule {
      */
     this._lastOrientationTimestamp = null;
 
-    /**
-     * Method binding of the sensor check.
-     *
-     * @this DeviceMotionModule
-     * @type {function}
-     */
+    this._processFunction = null;
+    this._process = this._process.bind(this);
     this._devicemotionCheck = this._devicemotionCheck.bind(this);
-
-    /**
-     * Method binding of the `'devicemotion'` event callback.
-     *
-     * @this DeviceMotionModule
-     * @type {function}
-     */
     this._devicemotionListener = this._devicemotionListener.bind(this);
   }
 
@@ -262,8 +243,9 @@ class DeviceMotionModule extends InputModule {
     );
     this.rotationRate.period = e.interval * this._unifyPeriod;
 
-    // We only need to listen to one event (=> remove the listener)
-    window.removeEventListener('devicemotion', this._devicemotionCheck, false);
+    // now that the sensors are chacked replace the process function with the
+    // proper listener
+    this._processFunction = this._devicemotionListener;
 
     // If acceleration is not provided by raw sensors, indicate whether it
     // can be calculated with `accelerationIncludingGravity` or not
@@ -295,19 +277,36 @@ class DeviceMotionModule extends InputModule {
    */
   _devicemotionListener(e) {
     // 'devicemotion' event (raw values)
-    this._emitDeviceMotionEvent(e);
+    if (this.listeners.size > 0)
+      this._emitDeviceMotionEvent(e);
 
     // 'acceleration' event (unified values)
-    if (this.required.accelerationIncludingGravity && this.accelerationIncludingGravity.isValid)
+    if (this.accelerationIncludingGravity.listeners.size > 0 &&
+        this.required.accelerationIncludingGravity &&
+        this.accelerationIncludingGravity.isValid
+    ) {
       this._emitAccelerationIncludingGravityEvent(e);
+    }
 
     // 'accelerationIncludingGravity' event (unified values)
-    if (this.required.acceleration && this.acceleration.isValid) // the fallback calculation of the acceleration happens in the `_emitAcceleration` method, so we check if this.acceleration.isValid
+    // the fallback calculation of the acceleration happens in the
+    //  `_emitAcceleration` method, so we check if this.acceleration.isValid
+    if (this.acceleration.listeners.size > 0 &&
+        this.required.acceleration &&
+        this.acceleration.isValid
+    ) {
       this._emitAccelerationEvent(e);
+    }
 
     // 'rotationRate' event (unified values)
-    if (this.required.rotationRate && this.rotationRate.isProvided) // the fallback calculation of the rotation rate does NOT happen in the `_emitRotationRate` method, so we only check if this.rotationRate.isProvided
+    // the fallback calculation of the rotation rate does NOT happen in the
+    // `_emitRotationRate` method, so we only check if this.rotationRate.isProvided
+    if (this.rotationRate.listeners.size > 0 &&
+        this.required.rotationRate &&
+        this.rotationRate.isProvided
+    ) {
       this._emitRotationRateEvent(e);
+    }
   }
 
   /**
@@ -497,36 +496,8 @@ class DeviceMotionModule extends InputModule {
       });
   }
 
-  /**
-   * Increases the number of listeners to this module (either because someone listens
-   * to this module, or one of the three `DOMEventSubmodules`
-   * (`AccelerationIncludingGravity`, `Acceleration`, `RotationRate`).
-   * When the number of listeners reaches `1`, adds a `'devicemotion'` event listener.
-   *
-   * @see DeviceMotionModule#addListener
-   * @see DOMEventSubmodule#start
-   */
-  _addListener() {
-    this._numListeners++;
-
-    if (this._numListeners === 1)
-      window.addEventListener('devicemotion', this._devicemotionListener, false);
-  }
-
-  /**
-   * Decreases the number of listeners to this module (either because someone stops
-   * listening to this module, or one of the three `DOMEventSubmodules`
-   * (`AccelerationIncludingGravity`, `Acceleration`, `RotationRate`).
-   * When the number of listeners reaches `0`, removes the `'devicemotion'` event listener.
-   *
-   * @see DeviceMotionModule#removeListener
-   * @see DOMEventSubmodule#stop
-   */
-  _removeListener() {
-    this._numListeners--;
-
-    if (this._numListeners === 0)
-      window.removeEventListener('devicemotion', this._devicemotionListener, false);
+  _process(data) {
+    this._processFunction(data);
   }
 
   /**
@@ -538,8 +509,10 @@ class DeviceMotionModule extends InputModule {
     return super.init((resolve) => {
       this._promiseResolve = resolve;
 
-      if (window.DeviceMotionEvent)
-        window.addEventListener('devicemotion', this._devicemotionCheck, false);
+      if (window.DeviceMotionEvent) {
+        this._processFunction = this._devicemotionCheck;
+        window.addEventListener('devicemotion', this._process);
+      }
 
       // WARNING
       // The lines of code below are commented because of a bug of Chrome
@@ -556,26 +529,6 @@ class DeviceMotionModule extends InputModule {
       else
         resolve(this);
     });
-  }
-
-  /**
-   * Adds a listener to this module.
-   *
-   * @param {function} listener - Listener to add.
-   */
-  addListener(listener) {
-    super.addListener(listener);
-    this._addListener();
-  }
-
-  /**
-   * Removes a listener from this module.
-   *
-   * @param {function} listener - Listener to remove.
-   */
-  removeListener(listener) {
-    super.removeListener(listener);
-    this._removeListener();
   }
 }
 

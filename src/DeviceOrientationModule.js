@@ -270,14 +270,6 @@ class DeviceOrientationModule extends InputModule {
     };
 
     /**
-     * Number of listeners subscribed to the `DeviceOrientation` module.
-     *
-     * @this DeviceOrientationModule
-     * @type {number}
-     */
-    this._numListeners = 0;
-
-    /**
      * Resolve function of the module's promise.
      *
      * @this DeviceOrientationModule
@@ -296,20 +288,9 @@ class DeviceOrientationModule extends InputModule {
      */
     this._estimatedGravity = [0, 0, 0];
 
-    /**
-     * Method binding of the sensor check.
-     *
-     * @this DeviceOrientationModule
-     * @type {function}
-     */
+    this._processFunction = null;
+    this._process = this._process.bind(this);
     this._deviceorientationCheck = this._deviceorientationCheck.bind(this);
-
-    /**
-     * Method binding of the `'deviceorientation'` event callback.
-     *
-     * @this DeviceOrientationModule
-     * @type {function}
-     */
     this._deviceorientationListener = this._deviceorientationListener.bind(this);
   }
 
@@ -333,8 +314,8 @@ class DeviceOrientationModule extends InputModule {
 
     // TODO(?): get pseudo-period
 
-    // We only need to listen to one event (=> remove the listener)
-    window.removeEventListener('deviceorientation', this._deviceorientationCheck, false);
+    // swap the process function to the
+    this._processFunction = this._deviceorientationListener;
 
     // If orientation or alternative orientation are not provided by raw sensors but required,
     // try to calculate them with `accelerationIncludingGravity` unified values
@@ -360,10 +341,14 @@ class DeviceOrientationModule extends InputModule {
     outEvent[1] = e.beta;
     outEvent[2] = e.gamma;
 
-    this.emit(outEvent);
+    if (this.listeners.size > 0)
+      this.emit(outEvent);
 
     // 'orientation' event (unified values)
-    if (this.required.orientation && this.orientation.isProvided) {
+    if (this.orientation.listeners.size > 0 &&
+        this.required.orientation &&
+        this.orientation.isProvided
+    ) {
       // On iOS, the `alpha` value is initialized at `0` on the first `deviceorientation` event
       // so we keep that reference in memory to calculate the North later on
       if (!this.orientation._webkitCompassHeadingReference && e.webkitCompassHeading && platform.os.family === 'iOS')
@@ -386,7 +371,10 @@ class DeviceOrientationModule extends InputModule {
     }
 
     // 'orientationAlt' event
-    if (this.required.orientationAlt && this.orientationAlt.isProvided) {
+    if (this.orientationAlt.listeners.size > 0 &&
+        this.required.orientationAlt &&
+        this.orientationAlt.isProvided
+    ) {
       // On iOS, the `alpha` value is initialized at `0` on the first `deviceorientation` event
       // so we keep that reference in memory to calculate the North later on
       if (!this.orientationAlt._webkitCompassHeadingReference && e.webkitCompassHeading && platform.os.family === 'iOS')
@@ -515,40 +503,8 @@ class DeviceOrientationModule extends InputModule {
     }
   }
 
-  /**
-   * Increases the number of listeners to this module (either because someone listens
-   * to this module, or one of the two `DOMEventSubmodules` (`Orientation`,
-   * `OrientationAlt`).
-   * When the number of listeners reaches `1`, adds a `'deviceorientation'`
-   * event listener.
-   *
-   * @see DeviceOrientationModule#addListener
-   * @see DOMEventSubmodule#start
-   */
-  _addListener() {
-    this._numListeners++;
-
-    if (this._numListeners === 1)
-      window.addEventListener('deviceorientation', this._deviceorientationListener, false);
-  }
-
-  /**
-   * Decreases the number of listeners to this module (either because someone stops
-   * listening to this module, or one of the three `DOMEventSubmodules`
-   * (`Orientation`, `OrientationAlt`).
-   * When the number of listeners reaches `0`, removes the `'deviceorientation'`
-   * event listener.
-   *
-   * @see DeviceOrientationModule#removeListener
-   * @see DOMEventSubmodule#stop
-   */
-  _removeListener() {
-    this._numListeners--;
-
-    if (this._numListeners === 0) {
-      window.removeEventListener('deviceorientation', this._deviceorientationListener, false);
-      this.orientation._webkitCompassHeadingReference = null; // don't forget to reset the compass reference since this reference is set each time we start listening to a `'deviceorientation'` event
-    }
+  _process(data) {
+    this._processFunction(data);
   }
 
   /**
@@ -560,33 +516,15 @@ class DeviceOrientationModule extends InputModule {
     return super.init((resolve) => {
       this._promiseResolve = resolve;
 
-      if (window.DeviceOrientationEvent)
-        window.addEventListener('deviceorientation', this._deviceorientationCheck, false);
-      else if (this.required.orientation)
+      if (window.DeviceOrientationEvent) {
+        this._processFunction = this._deviceorientationCheck;
+        window.addEventListener('deviceorientation', this._process, false);
+      } else if (this.required.orientation) {
         this._tryAccelerationIncludingGravityFallback();
-      else
+      } else {
         resolve(this);
+      }
     });
-  }
-
-  /**
-   * Adds a listener to this module.
-   *
-   * @param {function} listener - Listener to add.
-   */
-  addListener(listener) {
-    super.addListener(listener);
-    this._addListener();
-  }
-
-  /**
-   * Removes a listener from this module.
-   *
-   * @param {function} listener - Listener to remove.
-   */
-  removeListener(listener) {
-    super.removeListener(listener);
-    this._removeListener();
   }
 }
 

@@ -29,10 +29,9 @@ class InputModule {
      * Array of listeners attached to this module / event.
      *
      * @this InputModule
-     * @type {function[]}
-     * @default []
+     * @type {Set<Function>}
      */
-    this.listeners = [];
+    this.listeners = new Set();
 
     /**
      * Event sent by this module.
@@ -79,6 +78,8 @@ class InputModule {
      * @default undefined
      */
     this.period = undefined;
+
+    this.emit = this.emit.bind(this);
   }
 
   /**
@@ -103,30 +104,12 @@ class InputModule {
   }
 
   /**
-   * Starts the module.
-   */
-  start() {
-    // abstract method
-  }
-
-  /**
-   * Stops the module.
-   */
-  stop() {
-    // abstract method
-  }
-
-  /**
    * Adds a listener to the module.
    *
    * @param {function} listener - Listener to add.
    */
   addListener(listener) {
-    this.listeners.push(listener);
-
-    // Start the module as soon as there is a listener
-    if (this.listeners.length === 1)
-      this.start();
+    this.listeners.add(listener);
   }
 
   /**
@@ -135,12 +118,7 @@ class InputModule {
    * @param {function} listener - Listener to remove.
    */
   removeListener(listener) {
-    let index = this.listeners.indexOf(listener);
-    this.listeners.splice(index, 1);
-
-    // Stop the module id there are no listeners
-    if (this.listeners.length === 0)
-      this.stop();
+    this.listeners.delete(listener);
   }
 
   /**
@@ -149,8 +127,7 @@ class InputModule {
    * @param {number|number[]} [event=this.event] - Event values to propagate to the module's listeners.
    */
   emit(event = this.event) {
-    for (let listener of this.listeners)
-      listener(event);
+    this.listeners.forEach(listener => listener(event));
   }
 }
 

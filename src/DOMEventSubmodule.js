@@ -53,20 +53,6 @@ class DOMEventSubmodule extends InputModule {
   }
 
   /**
-   * Starts the module.
-   */
-  start() {
-    this.DOMEventModule._addListener();
-  }
-
-  /**
-   * Stops the module.
-   */
-  stop() {
-    this.DOMEventModule._removeListener();
-  }
-
-  /**
    * Initializes of the module.
    *
    * @return {Promise}
