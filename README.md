@@ -10,7 +10,7 @@ npm install [--save] collective-soundworks/motion-input
 
 ## Example
 
-[https://cdn.rawgit.com/collective-soundworks/motion-input/c43ae4ae/examples/motion-input/index.html](motion-input)
+[motion-input](https://cdn.rawgit.com/collective-soundworks/motion-input/c43ae4ae/examples/motion-input/index.html)
 
 ## Usage
 
