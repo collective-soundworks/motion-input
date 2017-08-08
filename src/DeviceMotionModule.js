@@ -117,7 +117,7 @@ class DeviceMotionModule extends InputModule {
      * @this DeviceMotionModule
      * @type {number}
      */
-    this._unifyMotionData = (platform.os.family === 'iOS' ? -1 : 1);
+    this._unifyMotionData = (platform.os.family === 'iOS') ? -1 : 1;
 
     /**
      * Unifying factor of the period (`0.001` on Android, `1` on iOS).
@@ -125,7 +125,7 @@ class DeviceMotionModule extends InputModule {
      * @this DeviceMotionModule
      * @type {number}
      */
-    this._unifyPeriod = (platform.os.family === 'Android' ? 0.001 : 1);
+    this._unifyPeriod = (platform.os.family === 'Android') ? 0.001 : 1;
 
     /**
      * Acceleration calculated from the `accelerationIncludingGravity` raw values.
@@ -238,17 +238,17 @@ class DeviceMotionModule extends InputModule {
     this.rotationRate.isProvided = (
       e.rotationRate &&
       (typeof e.rotationRate.alpha === 'number') &&
-      (typeof e.rotationRate.beta === 'number') &&
+      (typeof e.rotationRate.beta  === 'number') &&
       (typeof e.rotationRate.gamma === 'number')
     );
     this.rotationRate.period = e.interval * this._unifyPeriod;
 
-    // now that the sensors are chacked replace the process function with the
-    // proper listener
+    // now that the sensors are checked, replace the process function with
+    // the proper listener
     this._processFunction = this._devicemotionListener;
 
-    // If acceleration is not provided by raw sensors, indicate whether it
-    // can be calculated with `accelerationIncludingGravity` or not
+    // if acceleration is not provided by raw sensors, indicate whether it
+    // can be calculated with `accelerationincludinggravity` or not
     if (!this.acceleration.isProvided)
       this.acceleration.isCalculated = this.accelerationIncludingGravity.isProvided;
 
@@ -404,11 +404,24 @@ class DeviceMotionModule extends InputModule {
   _emitRotationRateEvent(e) {
     let outEvent = this.rotationRate.event;
 
-    outEvent[0] = e.rotationRate.alpha;
-    outEvent[1] = e.rotationRate.beta;
-    outEvent[2] = e.rotationRate.gamma;
+    // really ? or is it only chrome
+    if (platform.os.family === 'Android') {
+      // Reorder rotation values and scale to deg/s (chrome is in rad/s)
+      // cf. https://bugs.chromium.org/p/chromium/issues/detail?id=541607
+      //
+      // From spec: "The rotationRate attribute must be initialized with the rate
+      // of rotation of the hosting device in space. It must be expressed as the
+      // rate of change of the angles defined in section 4.1 and must be expressed
+      // in degrees per second (deg/s)."
+      outEvent[0] = e.rotationRate.gamma * toDeg;
+      outEvent[1] = e.rotationRate.alpha * toDeg,
+      outEvent[2] = e.rotationRate.beta * toDeg;
 
-    // TODO(?): unify
+    } else {
+      outEvent[0] = e.rotationRate.alpha;
+      outEvent[1] = e.rotationRate.beta;
+      outEvent[2] = e.rotationRate.gamma;
+    }
 
     this.rotationRate.emit(outEvent);
   }
@@ -458,6 +471,7 @@ class DeviceMotionModule extends InputModule {
         // Low pass filter to smooth the data
         if (alphaIsValid)
           rAlpha = k * this._calculatedRotationRate[0] + (1 - k) * (orientation[0] - this._lastOrientation[0] + alphaDiscontinuityFactor) / deltaT;
+
         rBeta = k * this._calculatedRotationRate[1] + (1 - k) * (orientation[1] - this._lastOrientation[1] + betaDiscontinuityFactor) / deltaT;
         rGamma = k * this._calculatedRotationRate[2] + (1 - k) * (orientation[2] - this._lastOrientation[2] + gammaDiscontinuityFactor) / deltaT;
 
@@ -483,7 +497,14 @@ class DeviceMotionModule extends InputModule {
     MotionInput.requireModule('orientation')
       .then((orientation) => {
         if (orientation.isValid) {
-          console.log("WARNING (motion-input): The 'devicemotion' event does not exists or does not provide rotation rate values in your browser, so the rotation rate of the device is estimated from the 'orientation', calculated from the 'deviceorientation' event. Since the compass might not be available, only `beta` and `gamma` angles may be provided (`alpha` would be null).");
+          console.log(`
+            WARNING (motion-input): The 'devicemotion' event does not exists or
+            does not provide rotation rate values in your browser, so the rotation
+            rate of the device is estimated from the 'orientation', calculated
+            from the 'deviceorientation' event. Since the compass might not
+            be available, only \`beta\` and \`gamma\` angles may be provided
+            (\`alpha\` would be null).`
+          );
 
           this.rotationRate.isCalculated = true;
 
