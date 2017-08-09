@@ -15,6 +15,9 @@ function getLocalTime() {
   return Date.now() / 1000;
 }
 
+const chromeRegExp = /Chrome/;
+const toDeg = 180 / Math.PI;
+
 /**
  * `DeviceMotion` module singleton.
  * The `DeviceMotionModule` singleton provides the raw values
@@ -120,7 +123,8 @@ class DeviceMotionModule extends InputModule {
     this._unifyMotionData = (platform.os.family === 'iOS') ? -1 : 1;
 
     /**
-     * Unifying factor of the period (`0.001` on Android, `1` on iOS).
+     * Unifying factor of the period (`1` on Android, `1` on iOS). in sec
+     * @todo - unify with e.interval specification (in ms) ?
      *
      * @this DeviceMotionModule
      * @type {number}
@@ -186,6 +190,8 @@ class DeviceMotionModule extends InputModule {
     this._process = this._process.bind(this);
     this._devicemotionCheck = this._devicemotionCheck.bind(this);
     this._devicemotionListener = this._devicemotionListener.bind(this);
+
+    this._checkCounter = 0;
   }
 
   /**
@@ -243,28 +249,38 @@ class DeviceMotionModule extends InputModule {
     );
     this.rotationRate.period = e.interval * this._unifyPeriod;
 
-    // now that the sensors are checked, replace the process function with
-    // the proper listener
-    this._processFunction = this._devicemotionListener;
+    // in firefox android, accelerationIncludingGravity retrieve null values
+    // on the first callback. so wait a second call to be sure.
+    if (
+      platform.os.family === 'Android' &&
+      /Firefox/.test(platform.name) &&
+      this._checkCounter < 1
+    ) {
+      this._checkCounter++;
+    } else {
+      // now that the sensors are checked, replace the process function with
+      // the final listener
+      this._processFunction = this._devicemotionListener;
 
-    // if acceleration is not provided by raw sensors, indicate whether it
-    // can be calculated with `accelerationincludinggravity` or not
-    if (!this.acceleration.isProvided)
-      this.acceleration.isCalculated = this.accelerationIncludingGravity.isProvided;
+      // if acceleration is not provided by raw sensors, indicate whether it
+      // can be calculated with `accelerationincludinggravity` or not
+      if (!this.acceleration.isProvided)
+        this.acceleration.isCalculated = this.accelerationIncludingGravity.isProvided;
 
-    // WARNING
-    // The lines of code below are commented because of a bug of Chrome
-    // on some Android devices, where 'devicemotion' events are not sent
-    // or caught if the listener is set up after a 'deviceorientation'
-    // listener. Here, the _tryOrientationFallback method would add a
-    // 'deviceorientation' listener and block all subsequent 'devicemotion'
-    // events on these devices. Comments will be removed once the bug of
-    // Chrome is corrected.
+      // WARNING
+      // The lines of code below are commented because of a bug of Chrome
+      // on some Android devices, where 'devicemotion' events are not sent
+      // or caught if the listener is set up after a 'deviceorientation'
+      // listener. Here, the _tryOrientationFallback method would add a
+      // 'deviceorientation' listener and block all subsequent 'devicemotion'
+      // events on these devices. Comments will be removed once the bug of
+      // Chrome is corrected.
 
-    // if (this.required.rotationRate && !this.rotationRate.isProvided)
-    //   this._tryOrientationFallback();
-    // else
-    this._promiseResolve(this);
+      // if (this.required.rotationRate && !this.rotationRate.isProvided)
+      //   this._tryOrientationFallback();
+      // else
+      this._promiseResolve(this);
+    }
   }
 
   /**
@@ -279,6 +295,11 @@ class DeviceMotionModule extends InputModule {
     // 'devicemotion' event (raw values)
     if (this.listeners.size > 0)
       this._emitDeviceMotionEvent(e);
+
+    // alert(`${this.accelerationIncludingGravity.listeners.size} -
+    //     ${this.required.accelerationIncludingGravity} -
+    //     ${this.accelerationIncludingGravity.isValid}
+    // `);
 
     // 'acceleration' event (unified values)
     if (this.accelerationIncludingGravity.listeners.size > 0 &&
@@ -404,23 +425,28 @@ class DeviceMotionModule extends InputModule {
   _emitRotationRateEvent(e) {
     let outEvent = this.rotationRate.event;
 
-    // really ? or is it only chrome
-    if (platform.os.family === 'Android') {
-      // Reorder rotation values and scale to deg/s (chrome is in rad/s)
-      // cf. https://bugs.chromium.org/p/chromium/issues/detail?id=541607
-      //
-      // From spec: "The rotationRate attribute must be initialized with the rate
-      // of rotation of the hosting device in space. It must be expressed as the
-      // rate of change of the angles defined in section 4.1 and must be expressed
-      // in degrees per second (deg/s)."
-      outEvent[0] = e.rotationRate.gamma * toDeg;
-      outEvent[1] = e.rotationRate.alpha * toDeg,
-      outEvent[2] = e.rotationRate.beta * toDeg;
+    // In all platforms, rotation axes are messed up according to the spec
+    // https://w3c.github.io/deviceorientation/spec-source-orientation.html
+    //
+    // gamma should be alpha
+    // alpha should be beta
+    // beta should be gamma
 
-    } else {
-      outEvent[0] = e.rotationRate.alpha;
-      outEvent[1] = e.rotationRate.beta;
-      outEvent[2] = e.rotationRate.gamma;
+    outEvent[0] = e.rotationRate.gamma;
+    outEvent[1] = e.rotationRate.alpha,
+    outEvent[2] = e.rotationRate.beta;
+
+    // Chrome Android retrieve values that are in rad/s
+    // cf. https://bugs.chromium.org/p/chromium/issues/detail?id=541607
+    //
+    // From spec: "The rotationRate attribute must be initialized with the rate
+    // of rotation of the hosting device in space. It must be expressed as the
+    // rate of change of the angles defined in section 4.1 and must be expressed
+    // in degrees per second (deg/s)."
+    if (platform.os.name === 'Android' && chromeRegExp.test(platform.name)) {
+      outEvent[0] *= toDeg;
+      outEvent[1] *= toDeg,
+      outEvent[2] *= toDeg;
     }
 
     this.rotationRate.emit(outEvent);
@@ -492,30 +518,41 @@ class DeviceMotionModule extends InputModule {
 
   /**
    * Checks whether the rotation rate can be calculated from the `orientation` values or not.
+   *
+   * @todo - this should be reviewed to comply with the axis order defined
+   *  in the spec
    */
-  _tryOrientationFallback() {
-    MotionInput.requireModule('orientation')
-      .then((orientation) => {
-        if (orientation.isValid) {
-          console.log(`
-            WARNING (motion-input): The 'devicemotion' event does not exists or
-            does not provide rotation rate values in your browser, so the rotation
-            rate of the device is estimated from the 'orientation', calculated
-            from the 'deviceorientation' event. Since the compass might not
-            be available, only \`beta\` and \`gamma\` angles may be provided
-            (\`alpha\` would be null).`
-          );
+  // WARNING
+  // The lines of code below are commented because of a bug of Chrome
+  // on some Android devices, where 'devicemotion' events are not sent
+  // or caught if the listener is set up after a 'deviceorientation'
+  // listener. Here, the _tryOrientationFallback method would add a
+  // 'deviceorientation' listener and block all subsequent 'devicemotion'
+  // events on these devices. Comments will be removed once the bug of
+  // Chrome is corrected.
+  // _tryOrientationFallback() {
+  //   MotionInput.requireModule('orientation')
+  //     .then((orientation) => {
+  //       if (orientation.isValid) {
+  //         console.log(`
+  //           WARNING (motion-input): The 'devicemotion' event does not exists or
+  //           does not provide rotation rate values in your browser, so the rotation
+  //           rate of the device is estimated from the 'orientation', calculated
+  //           from the 'deviceorientation' event. Since the compass might not
+  //           be available, only \`beta\` and \`gamma\` angles may be provided
+  //           (\`alpha\` would be null).`
+  //         );
 
-          this.rotationRate.isCalculated = true;
+  //         this.rotationRate.isCalculated = true;
 
-          MotionInput.addListener('orientation', (orientation) => {
-            this._calculateRotationRateFromOrientation(orientation);
-          });
-        }
+  //         MotionInput.addListener('orientation', (orientation) => {
+  //           this._calculateRotationRateFromOrientation(orientation);
+  //         });
+  //       }
 
-        this._promiseResolve(this);
-      });
-  }
+  //       this._promiseResolve(this);
+  //     });
+  // }
 
   _process(data) {
     this._processFunction(data);
