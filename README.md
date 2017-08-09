@@ -1,6 +1,6 @@
 # motion-input
 
-> The module provides unified motion data across iOS and Android platforms.
+> a module that provides unified motion data across platforms (iOS and Android) and browsers.
 
 ## Installation
 
