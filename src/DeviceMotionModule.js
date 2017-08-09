@@ -219,6 +219,10 @@ class DeviceMotionModule extends InputModule {
    * @param {DeviceMotionEvent} e - The first `'devicemotion'` event caught.
    */
   _devicemotionCheck(e) {
+    // clear timeout (anti-Firefox bug solution, window event deviceorientation being nver called)
+    // set the set timeout in init() function
+    clearTimeout(this._checkTimeoutId);
+
     this.isProvided = true;
     this.period = e.interval / 1000;
 
@@ -570,6 +574,10 @@ class DeviceMotionModule extends InputModule {
       if (window.DeviceMotionEvent) {
         this._processFunction = this._devicemotionCheck;
         window.addEventListener('devicemotion', this._process);
+        // set fallback timeout for Firefox (its window never calling the DeviceOrientation event, a 
+        // require of the DeviceOrientation service will result in the require promise never being resolved
+        // hence the Experiment start() method never called)
+        this._checkTimeoutId = setTimeout(() => resolve(this), 500);        
       }
 
       // WARNING
