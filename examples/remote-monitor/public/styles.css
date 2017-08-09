@@ -1,0 +1,32 @@
+html {
+  font-size: 62.5%;
+  font-family: monospace;
+}
+
+body {
+  margin: 20px;
+}
+
+#wrapper {
+  width: 100%;
+}
+
+h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: rgba(0, 0, 0, 0.9);
+}
+
+canvas {
+  outline: 1px solid #cdcdcd;
+}
+
+code {
+  font-size: 1.2rem;
+}
+
+.inner-wrapper {
+  width: 400px;
+  float: left;
+  margin: 20px;
+}
