@@ -447,7 +447,7 @@ class DeviceMotionModule extends InputModule {
     // of rotation of the hosting device in space. It must be expressed as the
     // rate of change of the angles defined in section 4.1 and must be expressed
     // in degrees per second (deg/s)."
-    if (platform.os.name === 'Android' && chromeRegExp.test(platform.name)) {
+    if (platform.os.family === 'Android' && chromeRegExp.test(platform.name)) {
       outEvent[0] *= toDeg;
       outEvent[1] *= toDeg,
       outEvent[2] *= toDeg;
@@ -574,10 +574,10 @@ class DeviceMotionModule extends InputModule {
       if (window.DeviceMotionEvent) {
         this._processFunction = this._devicemotionCheck;
         window.addEventListener('devicemotion', this._process);
-        // set fallback timeout for Firefox (its window never calling the DeviceOrientation event, a 
+        // set fallback timeout for Firefox (its window never calling the DeviceOrientation event, a
         // require of the DeviceOrientation service will result in the require promise never being resolved
         // hence the Experiment start() method never called)
-        this._checkTimeoutId = setTimeout(() => resolve(this), 500);        
+        this._checkTimeoutId = setTimeout(() => resolve(this), 500);
       }
 
       // WARNING
