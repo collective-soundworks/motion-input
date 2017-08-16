@@ -225,6 +225,7 @@ class DeviceMotionModule extends InputModule {
 
     this.isProvided = true;
     this.period = e.interval / 1000;
+    this.interval = e.interval;
 
     // Sensor availability for the acceleration including gravity
     this.accelerationIncludingGravity.isProvided = (
