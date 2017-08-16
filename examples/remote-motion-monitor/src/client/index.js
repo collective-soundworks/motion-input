@@ -15,9 +15,21 @@ socketReceive.processStreamParams({
   frameRate: 0,
 });
 
+const scaler = new lfo.operator.Scaler({ factor: [
+  1 / 9.81,
+  1 / 9.81,
+  1 / 9.81,
+  1 / 360,
+  1 / 360,
+  1 / 360,
+]});
+
 const logger = new lfo.sink.Logger({ time: false, data: true });
 
+socketReceive.connect(scaler);
+
 // x axis
+const xAccRawSelect = new lfo.operator.Select({ index: 0 });
 const xDisplay = new lfo.sink.BpfDisplay({
   canvas: '#x-display',
   min: -1,
@@ -28,14 +40,11 @@ const xDisplay = new lfo.sink.BpfDisplay({
   colors: ['blue'],
 });
 
-const xAccRawSelect = new lfo.operator.Select({ index: 0 });
-const xAccRawScaler = new Scaler({ factor: 1 / 9.81 }); // normalize
-
-socketReceive.connect(xAccRawSelect);
-xAccRawSelect.connect(xAccRawScaler);
-xAccRawScaler.connect(xDisplay);
+scaler.connect(xAccRawSelect);
+xAccRawSelect.connect(xDisplay);
 
 // y axis
+const yAccRawSelect = new lfo.operator.Select({ index: 1 });
 const yDisplay = new lfo.sink.BpfDisplay({
   canvas: '#y-display',
   min: -1,
@@ -46,14 +55,11 @@ const yDisplay = new lfo.sink.BpfDisplay({
   colors: ['orange'],
 });
 
-const yAccRawSelect = new lfo.operator.Select({ index: 1 });
-const yAccRawScaler = new Scaler({ factor: 1 / 9.81 }); // normalize
-
-socketReceive.connect(yAccRawSelect);
-yAccRawSelect.connect(yAccRawScaler);
-yAccRawScaler.connect(yDisplay);
+scaler.connect(yAccRawSelect);
+yAccRawSelect.connect(yDisplay);
 
 // z axis
+const zAccRawSelect = new lfo.operator.Select({ index: 2 });
 const zDisplay = new lfo.sink.BpfDisplay({
   canvas: '#z-display',
   min: -1,
@@ -64,15 +70,11 @@ const zDisplay = new lfo.sink.BpfDisplay({
   colors: ['green'],
 });
 
-const zAccRawSelect = new lfo.operator.Select({ index: 2 });
-const zAccRawScaler = new Scaler({ factor: 1 / 9.81 }); // normalize
-
-socketReceive.connect(zAccRawSelect);
-zAccRawSelect.connect(zAccRawScaler);
-zAccRawScaler.connect(zDisplay);
-
+scaler.connect(zAccRawSelect);
+zAccRawSelect.connect(zDisplay);
 
 // alpha
+const alphaRawSelect = new lfo.operator.Select({ index: 3 });
 const alphaDisplay = new lfo.sink.BpfDisplay({
   canvas: '#alpha-display',
   min: -1,
@@ -83,14 +85,11 @@ const alphaDisplay = new lfo.sink.BpfDisplay({
   colors: ['blue'],
 });
 
-const alphaRawSelect = new lfo.operator.Select({ index: 3 });
-const alphaRawScaler = new Scaler({ factor: 1 / 360 }); // normalize
-
-socketReceive.connect(alphaRawSelect);
-alphaRawSelect.connect(alphaRawScaler);
-alphaRawScaler.connect(alphaDisplay);
+scaler.connect(alphaRawSelect);
+alphaRawSelect.connect(alphaDisplay);
 
 // beta
+const betaRawSelect = new lfo.operator.Select({ index: 4 });
 const betaDisplay = new lfo.sink.BpfDisplay({
   canvas: '#beta-display',
   min: -1,
@@ -101,14 +100,11 @@ const betaDisplay = new lfo.sink.BpfDisplay({
   colors: ['orange'],
 });
 
-const betaRawSelect = new lfo.operator.Select({ index: 4 });
-const betaRawScaler = new Scaler({ factor: 1 / 360 }); // normalize
-
-socketReceive.connect(betaRawSelect);
-betaRawSelect.connect(betaRawScaler);
-betaRawScaler.connect(betaDisplay);
+scaler.connect(betaRawSelect);
+betaRawSelect.connect(betaDisplay);
 
 // gamma
+const gammaRawSelect = new lfo.operator.Select({ index: 5 });
 const gammaDisplay = new lfo.sink.BpfDisplay({
   canvas: '#gamma-display',
   min: -1,
@@ -119,10 +115,6 @@ const gammaDisplay = new lfo.sink.BpfDisplay({
   colors: ['green'],
 });
 
-const gammaRawSelect = new lfo.operator.Select({ index: 5 });
-const gammaRawScaler = new Scaler({ factor: 1 / 360 }); // normalize
-
-socketReceive.connect(gammaRawSelect);
-gammaRawSelect.connect(gammaRawScaler);
-gammaRawScaler.connect(gammaDisplay);
+scaler.connect(gammaRawSelect);
+gammaRawSelect.connect(gammaDisplay);
 

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1">
+      <title>Sensors monitor</title>
+      <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <% if (name === 'index') { %>
+    <pre>
+    <code>
+    </code>
+    </pre>
+    <div id="wrapper">
+
+      <div class="inner-wrapper">
+        <h1>Accelerometers</h1>
+
+        <h2>x axis</h2>
+        <canvas id="x-display"></canvas>
+
+        <h2>y axis</h2>
+        <canvas id="y-display"></canvas>
+
+        <h2>z axis</h2>
+        <canvas id="z-display"></canvas>
+      </div>
+
+      <div class="inner-wrapper">
+        <h1>Gyros</h1>
+
+        <h2>alpha</h2>
+        <canvas id="alpha-display"></canvas>
+
+        <h2>beta</h2>
+        <canvas id="beta-display"></canvas>
+
+        <h2>gamma</h2>
+        <canvas id="gamma-display"></canvas>
+      </div>
+
+    </div>
+    <% } else if (name === 'mobile') { %>
+      <h1>Sensor Client</h1>
+      <div id="feedback"></div>
+    <% } %>
+
+    <script src="./<%= name %>-bundle.js"></script>
+  </body>
+</html>
