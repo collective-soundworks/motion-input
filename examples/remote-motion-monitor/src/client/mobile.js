@@ -47,7 +47,6 @@ Promise.all([
       eventIn.process(null, data);
     });
   } else if (accelerationIncludingGravity.isValid) {
-    alert('???');
     accelerationIncludingGravity.addListener(([x, y, z]) => {
       data[0] = x;
       data[1] = y;
