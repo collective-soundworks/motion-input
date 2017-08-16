@@ -1,6 +1,6 @@
 # motion-input
 
-> a module that provides unified motion data across platforms (iOS and Android) and browsers.
+> Module that provides unified motion data across platforms (iOS and Android) and browsers.
 
 ## Installation
 
@@ -18,11 +18,14 @@ npm install [--save] collective-soundworks/motion-input
 const motionInput = require('motion-input');
  
 motionInput
-  .init(['acceleration', 'orientation', 'energy'])
-  .then(([acceleration, orientation, energy]) => {
-    if (acceleration.isValid)
-      acceleration.addListener(val => console.log('acceleration', val));
-    
+  .init(['accelerationIncludingGravity'])
+  .then(([accelerationIncludingGravity]) => {
+
+    if (accelerationIncludingGravity.isValid) {
+      accelerationIncludingGravity.addListener(val => {
+        console.log('acceleration', val) 
+      });
+    }
     // ...
   })
   .catch(err => console.error(err.stack));
