@@ -12,6 +12,10 @@
     {
       "name": "Norbert Schnell",
       "email": "Norbert.Schnell@ircam.fr"
+    },
+    {
+      "name": "Benjamin Matuszewski",
+      "email": "Benjamin.Matuszewski@ircam.fr"
     }
   ],
   "repository": "collective-soundworks/motion-input",

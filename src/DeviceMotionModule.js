@@ -575,10 +575,21 @@ class DeviceMotionModule extends InputModule {
       if (window.DeviceMotionEvent) {
         this._processFunction = this._devicemotionCheck;
         window.addEventListener('devicemotion', this._process);
-        // set fallback timeout for Firefox (its window never calling the DeviceOrientation event, a
+
+        // set fallback timeout for Firefox desktop (its window never calling the DeviceOrientation event, a
         // require of the DeviceOrientation service will result in the require promise never being resolved
         // hence the Experiment start() method never called)
-        this._checkTimeoutId = setTimeout(() => resolve(this), 500);
+        // > note 02/02/2018: this seems to create problems with ipods that
+        // don't have enough time to start (sometimes), hence creating false
+        // negative. So we only apply to Firefox desktop and put a really
+        // large value (4sec) just in case.
+        if (platform.name === 'Firefox' &&
+          platform.os.family !== 'Android' &&
+          platform.os.family !== 'iOS'
+        ) {
+          console.warn('[motion-input] register timer for Firefox desktop');
+          this._checkTimeoutId = setTimeout(() => resolve(this), 4 * 1000);
+        }
       }
 
       // WARNING
