@@ -1,6 +1,6 @@
 {
   "name": "motion-input",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Module that provides unified motion data across platforms (iOS and Android) and browsers",
   "main": "dist/index.js",
   "contributors": [
