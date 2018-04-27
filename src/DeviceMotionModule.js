@@ -448,7 +448,14 @@ class DeviceMotionModule extends InputModule {
     // of rotation of the hosting device in space. It must be expressed as the
     // rate of change of the angles defined in section 4.1 and must be expressed
     // in degrees per second (deg/s)."
-    if (platform.os.family === 'Android' && chromeRegExp.test(platform.name)) {
+    //
+    // fixed since Chrome 65
+    // cf. https://github.com/immersive-web/webvr-polyfill/issues/307
+    if (
+      platform.os.family === 'Android' &&
+      chromeRegExp.test(platform.name) &&
+      parseInt(platform.version.split('.')[0]) < 65
+    ) {
       outEvent[0] *= toDeg;
       outEvent[1] *= toDeg,
       outEvent[2] *= toDeg;
