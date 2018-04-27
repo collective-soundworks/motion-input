@@ -1,6 +1,4 @@
 import * as lfo from 'waves-lfo/client';
-import Merger from './lib/Merger';
-import Scaler from './lib/Scaler';
 
 /**
  * -----------------------------------------------------
@@ -15,7 +13,7 @@ socketReceive.processStreamParams({
   frameRate: 0,
 });
 
-const scaler = new lfo.operator.Scaler({ factor: [
+const scaler = new lfo.operator.Multiplier({ factor: [
   1 / 9.81,
   1 / 9.81,
   1 / 9.81,
