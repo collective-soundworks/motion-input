@@ -1,6 +1,6 @@
 {
   "name": "@ircam/motion-input",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Module that provides unified motion data across platforms (iOS and Android) and browsers",
   "main": "dist/index.js",
   "contributors": [
