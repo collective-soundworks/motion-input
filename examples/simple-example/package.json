@@ -11,10 +11,10 @@
     "prewatch": "npm run transpile",
     "watch": "./bin/runner --watch",
     "serve": "./bin/runner --serve",
-
     "postinstall": "npm run bundle"
   },
   "dependencies": {
+    "@ircam/motion-input": "^1.0.7",
     "babel-runtime": "^6.9.2"
   },
   "devDependencies": {
