@@ -1,5 +1,5 @@
 import * as lfo from 'waves-lfo/client';
-import motionInput from 'motion-input';
+import motionInput from '@ircam/motion-input';
 
 const eventIn = new lfo.source.EventIn({
   frameType: 'vector',

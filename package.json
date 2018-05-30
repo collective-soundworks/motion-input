@@ -1,5 +1,5 @@
 {
-  "name": "motion-input",
+  "name": "@ircam/motion-input",
   "version": "1.0.6",
   "description": "Module that provides unified motion data across platforms (iOS and Android) and browsers",
   "main": "dist/index.js",
@@ -18,12 +18,20 @@
       "email": "Benjamin.Matuszewski@ircam.fr"
     }
   ],
-  "repository": "collective-soundworks/motion-input",
+    "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/collective-soundworks/motion-input"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "doc": "jsdoc2md -t tmpl/README.hbs src/*.js > README.md",
+    "deploy": "np --yolo",
     "test": "babel-tape-runner tests/**.test.js",
     "transpile": "node ./bin/runner --transpile",
     "prewatch": "npm run transpile",
+    "version": "npm run transpile",
     "watch": "node ./bin/runner --watch"
   },
   "dependencies": {
@@ -38,6 +46,7 @@
     "fs-extra": "4.0.1",
     "jsdoc-to-markdown": "3.0.0",
     "klaw": "2.0.0",
+    "np": "^3.0.1",
     "tape": "4.8.0",
     "watch": "1.0.2"
   }

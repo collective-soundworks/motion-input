@@ -23,7 +23,7 @@ motionInput
 
     if (accelerationIncludingGravity.isValid) {
       accelerationIncludingGravity.addListener(val => {
-        console.log('acceleration', val) 
+        console.log(val) 
       });
     }
     // ...

@@ -1,4 +1,4 @@
-import motionInput from '../../../dist/index';
+import motionInput from '@ircam/motion-input';
 
 // Sensor support DOM elements
 const accelerationIncludingGravityProvided = document.querySelector('#accelerationIncludingGravityProvided');
